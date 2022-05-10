@@ -1,1 +1,1 @@
-# A generic, no_std Rust NES emulator
+## This is a no_std chip8 interpreter
