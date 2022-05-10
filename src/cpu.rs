@@ -1,13 +1,13 @@
 const MEMORY: usize = 0xFFFF;
 const PROGRAM_ROM: usize = 0x8000;
 
-struct Registers {
-    a: u8,
-    x: u8,
-    y: u8,
-    pc: u16,
-    s: u8,
-    p: u8,
+pub struct Registers {
+    pub a: u8,
+    pub x: u8,
+    pub y: u8,
+    pub pc: u16,
+    pub s: u8,
+    pub p: u8,
 }
 
 impl Registers {
@@ -33,7 +33,7 @@ impl Registers {
 }
 
 pub struct Cpu {
-    reg: Registers,
+    pub reg: Registers,
     memory: [u8; MEMORY],
 }
 
@@ -67,6 +67,7 @@ impl Cpu {
 
     pub fn tick(&mut self) {
         let opcode = self.fetch_opcode();
+        self.reg.pc += 1;
         self.execute(opcode);
     }
 
@@ -77,9 +78,66 @@ impl Cpu {
     fn execute(&mut self, opcode: u8) {
         match opcode {
             0x00 => {},
-            0xa9 => {},
-            0xaa => {},
+            0xa9 => {
+                self.lda();
+            },
+            0xaa => {
+                self.tax();
+            },
+            0xe8 => {
+                self.inx();
+            },
             _ => {}
         }
+    }
+    
+    fn lda(&mut self) {
+        self.reg.a = self.memory[self.reg.pc as usize];
+        self.reg.pc += 1;
+
+        if self.reg.a == 0 {
+            self.reg.s |= 0b0000_0010;
+        } else {
+            self.reg.s &= 0b1111_1101;
+        }
+
+        if self.reg.a & 0b1000_0000 != 0 {
+            self.reg.s |= 0b1000_0000;
+        } else {
+            self.reg.s &= 0b0111_1111;
+        }
+    }
+
+    fn tax(&mut self) {
+        self.reg.x = self.reg.a;
+
+        if self.reg.x == 0 {
+            self.reg.s |= 0b0000_0010;
+        } else {
+            self.reg.s &= 0b0111_1111;
+        }
+
+        if self.reg.x & 0b1000_0000 != 0 {
+            self.reg.s |= 0b1000_0000;
+        } else {
+            self.reg.s &= 0b0111_1111;
+        }
+    }
+    
+    fn inx(&mut self) {
+        self.reg.x = self.reg.x.overflowing_add(1).0;
+
+        if self.reg.x == 0 {
+            self.reg.s |= 0b0000_0010;
+        } else {
+            self.reg.s &= 0b0111_1111;
+        }
+
+        if self.reg.x & 0b1000_0000 != 0 {
+            self.reg.s |= 0b1000_0000;
+        } else {
+            self.reg.s &= 0b0111_1111;
+        }
+
     }
 }
