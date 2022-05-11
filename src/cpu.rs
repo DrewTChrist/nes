@@ -44,6 +44,7 @@ impl OpCode {
 const OPCODES: [OpCode; 1] = [OpCode::new(0xa9, "LDA", 2, 6, AddressMode::Immediate)];
 
 /// Struct to hold cpu registers
+#[derive(Copy, Clone)]
 pub struct Registers {
     pub a: u8,
     pub x: u8,
@@ -101,8 +102,8 @@ impl Cpu {
     }
 
     /// Returns the cpu registers
-    pub fn get_regisers(&self) -> Registers {
-        todo!();
+    pub fn get_registers(&self) -> Registers {
+        self.reg
     }
 
     /// Loads a program into the program rom space in cpu memory
