@@ -172,7 +172,9 @@ impl Cpu {
             0x11 => {}
             0x15 => {}
             0x16 => {}
-            0x18 => {}
+            0x18 => {
+                self.clc();
+            }
             0x19 => {}
             0x1d => {}
             0x1e => {}
@@ -203,7 +205,9 @@ impl Cpu {
                 self.and(AddressMode::ZeroPageX);
             }
             0x36 => {}
-            0x38 => {}
+            0x38 => {
+                self.sec();
+            }
             0x39 => {
                 self.and(AddressMode::AbsoluteY);
             }
@@ -225,7 +229,9 @@ impl Cpu {
             0x51 => {}
             0x55 => {}
             0x56 => {}
-            0x58 => {}
+            0x58 => {
+                self.cli();
+            }
             0x59 => {}
             0x5a => {}
             0x5d => {}
@@ -243,7 +249,9 @@ impl Cpu {
             0x70 => {}
             0x71 => {}
             0x75 => {}
-            0x78 => {}
+            0x78 => {
+                self.sei();
+            }
             0x79 => {}
             0x7d => {}
             0x7e => {}
@@ -265,16 +273,24 @@ impl Cpu {
             0x99 => {}
             0x9a => {}
             0x9d => {}
-            0xa0 => {}
+            0xa0 => {
+                self.ldy(AddressMode::Immediate);
+            }
             0xa1 => {
                 self.lda(AddressMode::IndirectX);
             }
-            0xa2 => {}
-            0xa4 => {}
+            0xa2 => {
+                self.ldx(AddressMode::Immediate);
+            }
+            0xa4 => {
+                self.ldy(AddressMode::ZeroPage);
+            }
             0xa5 => {
                 self.lda(AddressMode::ZeroPage);
             }
-            0xa6 => {}
+            0xa6 => {
+                self.ldx(AddressMode::ZeroPage);
+            }
             0xa8 => {}
             0xa9 => {
                 self.lda(AddressMode::Immediate);
@@ -282,36 +298,52 @@ impl Cpu {
             0xaa => {
                 self.tax();
             }
-            0xac => {}
+            0xac => {
+                self.ldy(AddressMode::Absolute);
+            }
             0xad => {
                 self.lda(AddressMode::Absolute);
             }
-            0xae => {}
+            0xae => {
+                self.ldx(AddressMode::Absolute);
+            }
             0xb0 => {}
             0xb1 => {
                 self.lda(AddressMode::IndirectY);
             }
-            0xb4 => {}
+            0xb4 => {
+                self.ldy(AddressMode::ZeroPageX)
+            }
             0xb5 => {
                 self.lda(AddressMode::ZeroPageX);
             }
-            0xb6 => {}
-            0xb8 => {}
+            0xb6 => {
+                self.ldx(AddressMode::ZeroPageX);
+            }
+            0xb8 => {
+                self.clv();
+            }
             0xb9 => {
                 self.lda(AddressMode::AbsoluteY);
             }
             0xba => {}
-            0xbc => {}
+            0xbc => {
+                self.ldy(AddressMode::AbsoluteX);
+            }
             0xbd => {
                 self.lda(AddressMode::AbsoluteX);
             }
-            0xbe => {}
+            0xbe => {
+                self.ldx(AddressMode::AbsoluteX);
+            }
             0xc0 => {}
             0xc1 => {}
             0xc4 => {}
             0xc5 => {}
             0xc6 => {}
-            0xc8 => {}
+            0xc8 => {
+                self.iny();
+            }
             0xc9 => {}
             0xca => {}
             0xcc => {}
@@ -324,27 +356,42 @@ impl Cpu {
             0xd9 => {}
             0xdd => {}
             0xde => {}
-            0xd8 => {}
+            0xd8 => {
+                self.cld();
+            }
             0xe0 => {}
             0xe1 => {}
             0xe4 => {}
             0xe5 => {}
-            0xe6 => {}
+            0xe6 => {
+                self.inc(AddressMode::ZeroPage);
+            }
             0xe8 => {
                 self.inx();
             }
             0xe9 => {}
+            0xea => {
+                self.nop();
+            }
             0xec => {}
             0xed => {}
-            0xee => {}
+            0xee => {
+                self.inc(AddressMode::Absolute);
+            }
             0xf0 => {}
             0xf1 => {}
             0xf5 => {}
-            0xf6 => {}
-            0xf8 => {}
+            0xf6 => {
+                self.inc(AddressMode::ZeroPageX);
+            }
+            0xf8 => {
+                self.sed();
+            }
             0xf9 => {}
             0xfd => {}
-            0xfe => {}
+            0xfe => {
+                self.inc(AddressMode::AbsoluteX);
+            }
             _ => {}
         }
     }
@@ -378,26 +425,31 @@ impl Cpu {
                     .read_mem_u16(self.reg.pc)
                     .wrapping_add(self.reg.y as u16);
             }
-            AddressMode::IndirectX => {}
-            AddressMode::IndirectY => {}
+            AddressMode::IndirectX => {
+                let base = self.read_mem(self.reg.pc);
+                let ptr: u8 = (base as u8).wrapping_add(self.reg.x);
+                let lo = self.read_mem(ptr as u16);
+                let hi = self.read_mem(ptr.wrapping_add(1) as u16);
+                addr = (hi as u16) << 8 | (lo as u16)
+            }
+            AddressMode::IndirectY => {
+                let base = self.read_mem(self.reg.pc);
+                let lo = self.read_mem(base as u16);
+                let hi = self.read_mem((base as u8).wrapping_add(1) as u16);
+                let deref_base = (hi as u16) << 8 | (lo as u16);
+                addr = deref_base.wrapping_add(self.reg.y as u16);
+            }
             AddressMode::NoMode => {}
         }
         addr
     }
 
-    /// Updates the zero flag and the negative flag
-    /// if the value past is 0 or the 7th bit is set
-    fn update_zero_negative_flags(&mut self, value: u8) {
-        if value == 0 {
-            self.reg.s |= 0b0000_0010;
+    fn update_flag(&mut self, flag: u8, condition: bool) {
+        let flag_bit: u8 = 1 << flag;
+        if condition {
+            self.reg.s |= flag_bit;
         } else {
-            self.reg.s &= 0b1111_1101;
-        }
-
-        if value & 0b1000_0000 != 0 {
-            self.reg.s |= 0b1000_0000;
-        } else {
-            self.reg.s &= 0b0111_1111;
+            self.reg.s &= !flag_bit;
         }
     }
 
@@ -405,23 +457,88 @@ impl Cpu {
         let address = self.get_address(address_mode);
         self.reg.a &= self.read_mem(address);
         self.reg.pc += 1;
-        self.update_zero_negative_flags(self.reg.a);
+        self.update_flag(1, self.reg.a == 0);
+        self.update_flag(7, self.reg.a & 0b1000_0000 != 0);
+    }
+
+    fn clc(&mut self) {
+        self.update_flag(0, false);
+    }
+    
+    fn cld(&mut self) {
+        self.update_flag(3, false);
+    }
+
+    fn cli(&mut self) {
+        self.update_flag(2, false);
+    }
+
+    fn clv(&mut self) {
+        self.update_flag(6, false);
+    }
+
+    fn inc(&mut self, address_mode: AddressMode) {
+        let address = self.get_address(address_mode); 
+        let value = self.read_mem(address).wrapping_add(1);
+        self.reg.pc += 1;
+        self.write_mem(address, value);
+        self.update_flag(1, value == 0);
+        self.update_flag(7, value & 0b1000_0000 != 0);
+    }
+
+    fn inx(&mut self) {
+        self.reg.x = self.reg.x.wrapping_add(1);
+        self.update_flag(1, self.reg.x == 0);
+        self.update_flag(7, self.reg.x & 0b1000_0000 != 0);
+    }
+
+    fn iny(&mut self) {
+        self.reg.y = self.reg.y.wrapping_add(1);
+        self.update_flag(1, self.reg.y == 0);
+        self.update_flag(7, self.reg.y & 0b1000_0000 != 0);
     }
 
     fn lda(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
         self.reg.a = self.read_mem(address);
         self.reg.pc += 1;
-        self.update_zero_negative_flags(self.reg.a);
+        self.update_flag(1, self.reg.a == 0);
+        self.update_flag(7, self.reg.a & 0b1000_0000 != 0);
+    }
+
+    fn ldx(&mut self, address_mode: AddressMode) {
+        let address = self.get_address(address_mode);
+        self.reg.x = self.read_mem(address);
+        self.reg.pc += 1;
+        self.update_flag(1, self.reg.x == 0);
+        self.update_flag(7, self.reg.x & 0b1000_0000 != 0);
+    }
+
+    fn ldy(&mut self, address_mode: AddressMode) {
+        let address = self.get_address(address_mode);
+        self.reg.y = self.read_mem(address);
+        self.reg.pc += 1;
+        self.update_flag(1, self.reg.y == 0);
+        self.update_flag(7, self.reg.y & 0b1000_0000 != 0);
+    }
+
+    fn nop(&self) {}
+    
+    fn sec(&mut self) {
+        self.update_flag(0, true);
+    }
+
+    fn sed(&mut self) {
+        self.update_flag(3, true);
+    }
+
+    fn sei(&mut self) {
+        self.update_flag(2, true);
     }
 
     fn tax(&mut self) {
         self.reg.x = self.reg.a;
-        self.update_zero_negative_flags(self.reg.x);
-    }
-
-    fn inx(&mut self) {
-        self.reg.x = self.reg.x.overflowing_add(1).0;
-        self.update_zero_negative_flags(self.reg.x);
+        self.update_flag(1, self.reg.x == 0);
+        self.update_flag(7, self.reg.x & 0b1000_0000 != 0);
     }
 }
