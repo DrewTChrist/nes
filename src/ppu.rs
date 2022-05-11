@@ -1,6 +1,4 @@
-use embedded_graphics::{
-    draw_target::DrawTarget, pixelcolor::Rgb565, prelude::*, 
-};
+use embedded_graphics::{draw_target::DrawTarget, pixelcolor::Rgb565, prelude::*};
 
 /// Picture processing unit
 pub struct Ppu<D>
