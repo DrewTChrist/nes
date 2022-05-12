@@ -15,34 +15,6 @@ enum AddressMode {
     NoMode,
 }
 
-struct OpCode {
-    opcode: u16,
-    instruction_name: &'static str,
-    bytes: u8,
-    cycles: u8,
-    address_mode: AddressMode,
-}
-
-impl OpCode {
-    const fn new(
-        opcode: u16,
-        instruction_name: &'static str,
-        bytes: u8,
-        cycles: u8,
-        address_mode: AddressMode,
-    ) -> Self {
-        Self {
-            opcode,
-            instruction_name,
-            bytes,
-            cycles,
-            address_mode,
-        }
-    }
-}
-
-const OPCODES: [OpCode; 1] = [OpCode::new(0xa9, "LDA", 2, 6, AddressMode::Immediate)];
-
 /// Struct to hold cpu registers
 #[derive(Copy, Clone)]
 pub struct Registers {
@@ -259,7 +231,9 @@ impl Cpu {
             0x84 => {}
             0x85 => {}
             0x86 => {}
-            0x88 => {}
+            0x88 => {
+                self.dey();
+            }
             0x8a => {}
             0x8c => {}
             0x8d => {}
@@ -340,22 +314,32 @@ impl Cpu {
             0xc1 => {}
             0xc4 => {}
             0xc5 => {}
-            0xc6 => {}
+            0xc6 => {
+                self.dec(AddressMode::ZeroPage);
+            }
             0xc8 => {
                 self.iny();
             }
             0xc9 => {}
-            0xca => {}
+            0xca => {
+                self.dex();
+            }
             0xcc => {}
             0xcd => {}
-            0xce => {}
+            0xce => {
+                self.dec(AddressMode::Absolute);
+            }
             0xd0 => {}
             0xd1 => {}
             0xd5 => {}
-            0xd6 => {}
+            0xd6 => {
+                self.dec(AddressMode::ZeroPageX);
+            }
             0xd9 => {}
             0xdd => {}
-            0xde => {}
+            0xde => {
+                self.dec(AddressMode::AbsoluteX);
+            }
             0xd8 => {
                 self.cld();
             }
@@ -447,9 +431,9 @@ impl Cpu {
     fn update_flag(&mut self, flag: u8, condition: bool) {
         let flag_bit: u8 = 1 << flag;
         if condition {
-            self.reg.s |= flag_bit;
+            self.reg.p |= flag_bit;
         } else {
-            self.reg.s &= !flag_bit;
+            self.reg.p &= !flag_bit;
         }
     }
 
@@ -475,6 +459,26 @@ impl Cpu {
 
     fn clv(&mut self) {
         self.update_flag(6, false);
+    }
+    
+    fn dec(&mut self, address_mode: AddressMode) {
+        let address = self.get_address(address_mode);
+        let value = self.read_mem(address).wrapping_sub(1);
+        self.write_mem(address, value);
+        self.update_flag(1, value == 0);
+        self.update_flag(7, value & 0b1000_0000 != 0);
+    }
+
+    fn dex(&mut self) {
+        self.reg.x = self.reg.x.wrapping_sub(1);
+        self.update_flag(1, self.reg.x == 0);
+        self.update_flag(7, self.reg.x & 0b1000_0000 != 0);
+    }
+
+    fn dey(&mut self) {
+        self.reg.y = self.reg.x.wrapping_sub(1);
+        self.update_flag(1, self.reg.y == 0);
+        self.update_flag(7, self.reg.y & 0b1000_0000 != 0);
     }
 
     fn inc(&mut self, address_mode: AddressMode) {
@@ -536,9 +540,25 @@ impl Cpu {
         self.update_flag(2, true);
     }
 
+    fn sta(&mut self, address_mode: AddressMode) {}
+
+    fn stx(&mut self, address_mode: AddressMode) {}
+
+    fn sty(&mut self, address_mode: AddressMode) {}
+
     fn tax(&mut self) {
         self.reg.x = self.reg.a;
         self.update_flag(1, self.reg.x == 0);
         self.update_flag(7, self.reg.x & 0b1000_0000 != 0);
     }
+
+    fn tay(&mut self) {}
+
+    fn tsx(&mut self) {}
+
+    fn txa(&mut self) {}
+
+    fn txs(&mut self) {}
+
+    fn tya(&mut self) {}
 }
