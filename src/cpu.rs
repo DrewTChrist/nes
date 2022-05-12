@@ -131,251 +131,157 @@ impl Cpu {
     /// Executes a program instruction
     fn execute(&mut self, opcode: u8) {
         match opcode {
-            0x00 => {}
-            0x01 => {}
-            0x05 => {}
-            0x06 => {}
-            0x08 => {}
-            0x09 => {}
-            0x0a => {}
-            0x0d => {}
-            0x0e => {}
-            0x10 => {}
-            0x11 => {}
-            0x15 => {}
-            0x16 => {}
-            0x18 => {
-                self.clc();
-            }
-            0x19 => {}
-            0x1d => {}
-            0x1e => {}
-            0x20 => {}
-            0x21 => {
-                self.and(AddressMode::IndirectX);
-            }
-            0x24 => {}
-            0x25 => {
-                self.and(AddressMode::ZeroPage);
-            }
-            0x26 => {}
-            0x28 => {}
-            0x29 => {
-                self.and(AddressMode::Immediate);
-            }
-            0x2a => {}
-            0x2c => {}
-            0x2e => {}
-            0x2d => {
-                self.and(AddressMode::Absolute);
-            }
-            0x30 => {}
-            0x31 => {
-                self.and(AddressMode::IndirectY);
-            }
-            0x35 => {
-                self.and(AddressMode::ZeroPageX);
-            }
-            0x36 => {}
-            0x38 => {
-                self.sec();
-            }
-            0x39 => {
-                self.and(AddressMode::AbsoluteY);
-            }
-            0x3d => {
-                self.and(AddressMode::AbsoluteX);
-            }
-            0x3e => {}
-            0x40 => {}
-            0x41 => {}
-            0x45 => {}
-            0x46 => {}
-            0x48 => {}
-            0x49 => {}
-            0x4a => {}
-            0x4c => {}
-            0x4d => {}
-            0x4e => {}
-            0x50 => {}
-            0x51 => {}
-            0x55 => {}
-            0x56 => {}
-            0x58 => {
-                self.cli();
-            }
-            0x59 => {}
-            0x5a => {}
-            0x5d => {}
-            0x5e => {}
-            0x60 => {}
-            0x61 => {}
-            0x65 => {}
-            0x66 => {}
-            0x68 => {}
-            0x69 => {}
-            0x6a => {}
-            0x6c => {}
-            0x6d => {}
-            0x6e => {}
-            0x70 => {}
-            0x71 => {}
-            0x75 => {}
-            0x78 => {
-                self.sei();
-            }
-            0x79 => {}
-            0x7d => {}
-            0x7e => {}
-            0x81 => {}
-            0x84 => {}
-            0x85 => {}
-            0x86 => {}
-            0x88 => {
-                self.dey();
-            }
-            0x8a => {}
-            0x8c => {}
-            0x8d => {}
-            0x8e => {}
-            0x90 => {}
-            0x91 => {}
-            0x94 => {}
-            0x95 => {}
-            0x96 => {}
-            0x98 => {}
-            0x99 => {}
-            0x9a => {}
-            0x9d => {}
-            0xa0 => {
-                self.ldy(AddressMode::Immediate);
-            }
-            0xa1 => {
-                self.lda(AddressMode::IndirectX);
-            }
-            0xa2 => {
-                self.ldx(AddressMode::Immediate);
-            }
-            0xa4 => {
-                self.ldy(AddressMode::ZeroPage);
-            }
-            0xa5 => {
-                self.lda(AddressMode::ZeroPage);
-            }
-            0xa6 => {
-                self.ldx(AddressMode::ZeroPage);
-            }
-            0xa8 => {}
-            0xa9 => {
-                self.lda(AddressMode::Immediate);
-            }
-            0xaa => {
-                self.tax();
-            }
-            0xac => {
-                self.ldy(AddressMode::Absolute);
-            }
-            0xad => {
-                self.lda(AddressMode::Absolute);
-            }
-            0xae => {
-                self.ldx(AddressMode::Absolute);
-            }
-            0xb0 => {}
-            0xb1 => {
-                self.lda(AddressMode::IndirectY);
-            }
-            0xb4 => {
-                self.ldy(AddressMode::ZeroPageX)
-            }
-            0xb5 => {
-                self.lda(AddressMode::ZeroPageX);
-            }
-            0xb6 => {
-                self.ldx(AddressMode::ZeroPageX);
-            }
-            0xb8 => {
-                self.clv();
-            }
-            0xb9 => {
-                self.lda(AddressMode::AbsoluteY);
-            }
-            0xba => {}
-            0xbc => {
-                self.ldy(AddressMode::AbsoluteX);
-            }
-            0xbd => {
-                self.lda(AddressMode::AbsoluteX);
-            }
-            0xbe => {
-                self.ldx(AddressMode::AbsoluteX);
-            }
-            0xc0 => {}
-            0xc1 => {}
-            0xc4 => {}
-            0xc5 => {}
-            0xc6 => {
-                self.dec(AddressMode::ZeroPage);
-            }
-            0xc8 => {
-                self.iny();
-            }
-            0xc9 => {}
-            0xca => {
-                self.dex();
-            }
-            0xcc => {}
-            0xcd => {}
-            0xce => {
-                self.dec(AddressMode::Absolute);
-            }
-            0xd0 => {}
-            0xd1 => {}
-            0xd5 => {}
-            0xd6 => {
-                self.dec(AddressMode::ZeroPageX);
-            }
-            0xd9 => {}
-            0xdd => {}
-            0xde => {
-                self.dec(AddressMode::AbsoluteX);
-            }
-            0xd8 => {
-                self.cld();
-            }
-            0xe0 => {}
-            0xe1 => {}
-            0xe4 => {}
-            0xe5 => {}
-            0xe6 => {
-                self.inc(AddressMode::ZeroPage);
-            }
-            0xe8 => {
-                self.inx();
-            }
-            0xe9 => {}
-            0xea => {
-                self.nop();
-            }
-            0xec => {}
-            0xed => {}
-            0xee => {
-                self.inc(AddressMode::Absolute);
-            }
-            0xf0 => {}
-            0xf1 => {}
-            0xf5 => {}
-            0xf6 => {
-                self.inc(AddressMode::ZeroPageX);
-            }
-            0xf8 => {
-                self.sed();
-            }
-            0xf9 => {}
-            0xfd => {}
-            0xfe => {
-                self.inc(AddressMode::AbsoluteX);
-            }
+            0x00 => todo!(),
+            0x01 => todo!(),
+            0x05 => todo!(),
+            0x06 => todo!(),
+            0x08 => todo!(),
+            0x09 => todo!(),
+            0x0a => todo!(),
+            0x0d => todo!(),
+            0x0e => todo!(),
+            0x10 => todo!(),
+            0x11 => todo!(),
+            0x15 => todo!(),
+            0x16 => todo!(),
+            0x18 => self.clc(),
+            0x19 => todo!(),
+            0x1d => todo!(),
+            0x1e => todo!(),
+            0x20 => todo!(),
+            0x21 => self.and(AddressMode::IndirectX),
+            0x24 => todo!(),
+            0x25 => self.and(AddressMode::ZeroPage),
+            0x26 => todo!(),
+            0x28 => todo!(),
+            0x29 => self.and(AddressMode::Immediate),
+            0x2a => todo!(),
+            0x2c => todo!(),
+            0x2e => todo!(),
+            0x2d => self.and(AddressMode::Absolute),
+            0x30 => todo!(),
+            0x31 => self.and(AddressMode::IndirectY),
+            0x35 => self.and(AddressMode::ZeroPageX),
+            0x36 => todo!(),
+            0x38 => self.sec(),
+            0x39 => self.and(AddressMode::AbsoluteY),
+            0x3d => self.and(AddressMode::AbsoluteX),
+            0x3e => todo!(),
+            0x40 => todo!(),
+            0x41 => todo!(),
+            0x45 => todo!(),
+            0x46 => todo!(),
+            0x48 => todo!(),
+            0x49 => todo!(),
+            0x4a => todo!(),
+            0x4c => todo!(),
+            0x4d => todo!(),
+            0x4e => todo!(),
+            0x50 => todo!(),
+            0x51 => todo!(),
+            0x55 => todo!(),
+            0x56 => todo!(),
+            0x58 => self.cli(),
+            0x59 => todo!(),
+            0x5a => todo!(),
+            0x5d => todo!(),
+            0x5e => todo!(),
+            0x60 => todo!(),
+            0x61 => todo!(),
+            0x65 => todo!(),
+            0x66 => todo!(),
+            0x68 => todo!(),
+            0x69 => todo!(),
+            0x6a => todo!(),
+            0x6c => todo!(),
+            0x6d => todo!(),
+            0x6e => todo!(),
+            0x70 => todo!(),
+            0x71 => todo!(),
+            0x75 => todo!(),
+            0x78 => self.sei(),
+            0x79 => todo!(),
+            0x7d => todo!(),
+            0x7e => todo!(),
+            0x81 => todo!(),
+            0x84 => todo!(),
+            0x85 => todo!(),
+            0x86 => todo!(),
+            0x88 => self.dey(),
+            0x8a => todo!(),
+            0x8c => todo!(),
+            0x8d => todo!(),
+            0x8e => todo!(),
+            0x90 => todo!(),
+            0x91 => todo!(),
+            0x94 => todo!(),
+            0x95 => todo!(),
+            0x96 => todo!(),
+            0x98 => todo!(),
+            0x99 => todo!(),
+            0x9a => todo!(),
+            0x9d => todo!(),
+            0xa0 => self.ldy(AddressMode::Immediate),
+            0xa1 => self.lda(AddressMode::IndirectX),
+            0xa2 => self.ldx(AddressMode::Immediate),
+            0xa4 => self.ldy(AddressMode::ZeroPage),
+            0xa5 => self.lda(AddressMode::ZeroPage),
+            0xa6 => self.ldx(AddressMode::ZeroPage),
+            0xa8 => todo!(),
+            0xa9 => self.lda(AddressMode::Immediate),
+            0xaa => self.tax(),
+            0xac => self.ldy(AddressMode::Absolute),
+            0xad => self.lda(AddressMode::Absolute),
+            0xae => self.ldx(AddressMode::Absolute),
+            0xb0 => todo!(),
+            0xb1 => self.lda(AddressMode::IndirectY),
+            0xb4 => self.ldy(AddressMode::ZeroPageX),
+            0xb5 => self.lda(AddressMode::ZeroPageX),
+            0xb6 => self.ldx(AddressMode::ZeroPageX),
+            0xb8 => self.clv(),
+            0xb9 => self.lda(AddressMode::AbsoluteY),
+            0xba => todo!(),
+            0xbc => self.ldy(AddressMode::AbsoluteX),
+            0xbd => self.lda(AddressMode::AbsoluteX),
+            0xbe => self.ldx(AddressMode::AbsoluteX),
+            0xc0 => todo!(),
+            0xc1 => todo!(),
+            0xc4 => todo!(),
+            0xc5 => todo!(),
+            0xc6 => self.dec(AddressMode::ZeroPage),
+            0xc8 => self.iny(),
+            0xc9 => todo!(),
+            0xca => self.dex(),
+            0xcc => todo!(),
+            0xcd => todo!(),
+            0xce => self.dec(AddressMode::Absolute),
+            0xd0 => todo!(),
+            0xd1 => todo!(),
+            0xd5 => todo!(),
+            0xd6 => self.dec(AddressMode::ZeroPageX),
+            0xd9 => todo!(),
+            0xdd => todo!(),
+            0xde => self.dec(AddressMode::AbsoluteX),
+            0xd8 => self.cld(),
+            0xe0 => todo!(),
+            0xe1 => todo!(),
+            0xe4 => todo!(),
+            0xe5 => todo!(),
+            0xe6 => self.inc(AddressMode::ZeroPage),
+            0xe8 => self.inx(),
+            0xe9 => todo!(),
+            0xea => self.nop(),
+            0xec => todo!(),
+            0xed => todo!(),
+            0xee => self.inc(AddressMode::Absolute),
+            0xf0 => todo!(),
+            0xf1 => todo!(),
+            0xf5 => todo!(),
+            0xf6 => self.inc(AddressMode::ZeroPageX),
+            0xf8 => self.sed(),
+            0xf9 => todo!(),
+            0xfd => todo!(),
+            0xfe => self.inc(AddressMode::AbsoluteX),
             _ => {}
         }
     }
@@ -448,7 +354,7 @@ impl Cpu {
     fn clc(&mut self) {
         self.update_flag(0, false);
     }
-    
+
     fn cld(&mut self) {
         self.update_flag(3, false);
     }
@@ -460,10 +366,11 @@ impl Cpu {
     fn clv(&mut self) {
         self.update_flag(6, false);
     }
-    
+
     fn dec(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
         let value = self.read_mem(address).wrapping_sub(1);
+        self.reg.pc += 1;
         self.write_mem(address, value);
         self.update_flag(1, value == 0);
         self.update_flag(7, value & 0b1000_0000 != 0);
@@ -476,13 +383,13 @@ impl Cpu {
     }
 
     fn dey(&mut self) {
-        self.reg.y = self.reg.x.wrapping_sub(1);
+        self.reg.y = self.reg.y.wrapping_sub(1);
         self.update_flag(1, self.reg.y == 0);
         self.update_flag(7, self.reg.y & 0b1000_0000 != 0);
     }
 
     fn inc(&mut self, address_mode: AddressMode) {
-        let address = self.get_address(address_mode); 
+        let address = self.get_address(address_mode);
         let value = self.read_mem(address).wrapping_add(1);
         self.reg.pc += 1;
         self.write_mem(address, value);
@@ -527,7 +434,7 @@ impl Cpu {
     }
 
     fn nop(&self) {}
-    
+
     fn sec(&mut self) {
         self.update_flag(0, true);
     }

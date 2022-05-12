@@ -179,7 +179,16 @@ mod cpu {
     #[test]
     fn _88() {
         // dey
-        todo!();
+        let program: [u8; 3] = [0x88, 0x88, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x05;
+        cpu.tick();
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.reg.y, 3);
+        assert!(cpu.reg.p & 0b0000_0010 == 0b00);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
 
     #[test]
@@ -464,7 +473,13 @@ mod cpu {
     #[test]
     fn _c6() {
         // dec zero page
-        todo!();
+        let program: [u8; 3] = [0xc6, 0x05, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0x05, 0xa);
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.read_mem(0x05), 0x09);
     }
 
     #[test]
@@ -483,19 +498,40 @@ mod cpu {
     #[test]
     fn _ca() {
         // dex
-        todo!();
+        let program: [u8; 3] = [0xca, 0xca, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x05;
+        cpu.tick();
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.reg.x, 3);
+        assert!(cpu.reg.p & 0b0000_0010 == 0b00);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
 
     #[test]
     fn _ce() {
         // dec absolute
-        todo!();
+        let program: [u8; 5] = [0xce, 0x03, 0x80, 0xa, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.read_mem(0x8003), 0x09);
     }
 
     #[test]
     fn _d6() {
         // dec zero page x
-        todo!();
+        let program: [u8; 3] = [0xd6, 0x05, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x05;
+        cpu.write_mem(0xa, 0xa);
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.read_mem(0xa), 0x09);
     }
 
     #[test]
@@ -513,7 +549,13 @@ mod cpu {
     #[test]
     fn _de() {
         // dec absolute x
-        todo!();
+        let program: [u8; 5] = [0xde, 0x00, 0x80, 0xa, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x03;
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.read_mem(0x8003), 0x09);
     }
 
     #[test]
