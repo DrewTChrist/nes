@@ -642,6 +642,25 @@ mod cpu {
         assert_eq!(cpu.reg.pc, 0x8004);
         assert_eq!(cpu.reg.x, 0xc1);
     }
+
+    #[test]
+    fn dec_test() {
+        let program: [u8; 19] = [0xce, 0x05, 0x00, 
+                                 0xce, 0x05, 0x00, 
+                                 0xce, 0x05, 0x00, 
+                                 0xce, 0x05, 0x00, 
+                                 0xce, 0x05, 0x00, 
+                                 0xce, 0x05, 0x00, 0x00];
+
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0x05, 0xff);
+        for _ in 0..6 {
+            cpu.tick();
+        }
+        assert_eq!(cpu.reg.pc, 0x8012);
+        assert_eq!(cpu.read_mem(0x05), 0xff - 0x06);
+    }
 }
 
 #[cfg(test)]
