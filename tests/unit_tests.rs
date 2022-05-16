@@ -71,7 +71,7 @@ mod cpu {
         cpu.load_program(program);
         cpu.reg.a = 0xa;
         cpu.tick();
-        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.reg.pc, 0x8003);
         assert_eq!(cpu.reg.a, 0x08);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
@@ -131,7 +131,7 @@ mod cpu {
         cpu.reg.y = 0x03;
         cpu.reg.a = 0xa;
         cpu.tick();
-        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.reg.pc, 0x8003);
         assert_eq!(cpu.reg.a, 0x08);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
@@ -146,7 +146,7 @@ mod cpu {
         cpu.reg.x = 0x03;
         cpu.reg.a = 0xa;
         cpu.tick();
-        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.reg.pc, 0x8003);
         assert_eq!(cpu.reg.a, 0x08);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
@@ -309,7 +309,7 @@ mod cpu {
         let mut cpu = Cpu::new();
         cpu.load_program(program);
         cpu.tick();
-        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.reg.pc, 0x8003);
         assert_eq!(cpu.reg.y, 0xa);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
@@ -323,7 +323,7 @@ mod cpu {
         cpu.load_program(program);
         cpu.tick();
         assert_eq!(cpu.reg.a, 0xa);
-        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.reg.pc, 0x8003);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
@@ -335,7 +335,7 @@ mod cpu {
         let mut cpu = Cpu::new();
         cpu.load_program(program);
         cpu.tick();
-        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.reg.pc, 0x8003);
         assert_eq!(cpu.reg.x, 0xa);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
@@ -423,7 +423,7 @@ mod cpu {
         cpu.reg.y = 0x03;
         cpu.tick();
         assert_eq!(cpu.reg.a, 0xa);
-        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.reg.pc, 0x8003);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
@@ -436,7 +436,7 @@ mod cpu {
         cpu.load_program(program);
         cpu.reg.x = 0x03;
         cpu.tick();
-        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.reg.pc, 0x8003);
         assert_eq!(cpu.reg.y, 0xa);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
@@ -451,7 +451,7 @@ mod cpu {
         cpu.reg.x = 0x03;
         cpu.tick();
         assert_eq!(cpu.reg.a, 0xa);
-        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.reg.pc, 0x8003);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
@@ -464,7 +464,7 @@ mod cpu {
         cpu.load_program(program);
         cpu.reg.x = 0x03;
         cpu.tick();
-        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.reg.pc, 0x8003);
         assert_eq!(cpu.reg.x, 0xa);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
@@ -517,7 +517,7 @@ mod cpu {
         let mut cpu = Cpu::new();
         cpu.load_program(program);
         cpu.tick();
-        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.reg.pc, 0x8003);
         assert_eq!(cpu.read_mem(0x8003), 0x09);
     }
 
@@ -530,7 +530,7 @@ mod cpu {
         cpu.reg.x = 0x05;
         cpu.write_mem(0xa, 0xa);
         cpu.tick();
-        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.reg.pc, 0x8003);
         assert_eq!(cpu.read_mem(0xa), 0x09);
     }
 
@@ -590,7 +590,7 @@ mod cpu {
         let mut cpu = Cpu::new();
         cpu.load_program(program);
         cpu.tick();
-        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.reg.pc, 0x8003);
         assert_eq!(cpu.read_mem(0x8003), 0xa);
     }
 
@@ -621,13 +621,13 @@ mod cpu {
 
     #[test]
     fn _fe() {
-        // inc absolute
+        // inc absolute x
         let program: [u8; 5] = [0xfe, 0x00, 0x80, 0x09, 0x00];
         let mut cpu = Cpu::new();
         cpu.reg.x = 0x03;
         cpu.load_program(program);
         cpu.tick();
-        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.reg.pc, 0x8003);
         assert_eq!(cpu.read_mem(0x8003), 0xa);
     }
 

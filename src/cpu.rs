@@ -174,7 +174,7 @@ impl Cpu {
         self.write_mem(addr + 1, (bytes >> 8) as u8);
     }
 
-    /// Grabs the value in memory pointed at by te program counter
+    /// Grabs the value in memory pointed at by the program counter
     fn fetch_opcode(&self) -> u8 {
         self.memory[self.reg.pc as usize]
     }
