@@ -4,7 +4,6 @@ import serial.tools.list_ports
 """ Serial Communicator class """
 class Communicator:
     def __init__(self):
-        #self.serial = serial.Serial('/dev/ttyUSB0')
         self.serial = serial.Serial()
 
     def set_port(self, port):

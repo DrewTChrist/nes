@@ -17,11 +17,12 @@ class App:
         self.master.maxsize(WIDTH, HEIGHT)
         self.master.minsize(WIDTH, HEIGHT)
         self.master.title("Debugger")
+
         self.comm = Communicator()
 
         self.queue = queue.Queue()
 
-        self.gui = UI(master, self.queue, self.comm.list_ports(), self.endApplication)
+        self.gui = UI(master, self.queue, self.comm.list_ports(), self.quit)
 
         self.running = True
         self.comm_thread = threading.Thread(target=self.read_comms, daemon=True)
@@ -34,7 +35,9 @@ class App:
         if not self.running:
             self.comm.serial.close()
             sys.exit(1)
-        self.master.after(20, self.poll_ui)
+        """ Too small of a time will lock up the UI
+            I will need to find the sweet spot """
+        self.master.after(100, self.poll_ui)
 
     def read_comms(self):
         while self.running:
@@ -49,5 +52,5 @@ class App:
                     msg = self.comm.readline()
                     self.queue.put(msg)
 
-    def endApplication(self):
+    def quit(self):
         self.running = False
