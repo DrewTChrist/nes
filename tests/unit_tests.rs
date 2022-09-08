@@ -530,7 +530,7 @@ mod cpu {
         cpu.reg.x = 0x05;
         cpu.write_mem(0xa, 0xa);
         cpu.tick();
-        assert_eq!(cpu.reg.pc, 0x8003);
+        assert_eq!(cpu.reg.pc, 0x8002);
         assert_eq!(cpu.read_mem(0xa), 0x09);
     }
 
@@ -554,7 +554,7 @@ mod cpu {
         cpu.load_program(program);
         cpu.reg.x = 0x03;
         cpu.tick();
-        assert_eq!(cpu.reg.pc, 0x8002);
+        assert_eq!(cpu.reg.pc, 0x8003);
         assert_eq!(cpu.read_mem(0x8003), 0x09);
     }
 
