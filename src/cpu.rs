@@ -20,32 +20,31 @@ enum AddressMode {
 }
 
 impl AddressMode {
-    const IMMEDIATE: AddressMode   = AddressMode::Immediate(1);
-    const ZERO_PAGE: AddressMode   = AddressMode::ZeroPage(1);
+    const IMMEDIATE: AddressMode = AddressMode::Immediate(1);
+    const ZERO_PAGE: AddressMode = AddressMode::ZeroPage(1);
     const ZERO_PAGE_X: AddressMode = AddressMode::ZeroPageX(1);
     const ZERO_PAGE_Y: AddressMode = AddressMode::ZeroPageY(1);
-    const ABSOLUTE: AddressMode    = AddressMode::Absolute(2);
-    const ABSOLUTE_X: AddressMode  = AddressMode::AbsoluteX(2);
-    const ABSOLUTE_Y: AddressMode  = AddressMode::AbsoluteY(2);
-    const INDIRECT_X: AddressMode  = AddressMode::IndirectX(1);
-    const INDIRECT_Y: AddressMode  = AddressMode::IndirectY(1);
+    const ABSOLUTE: AddressMode = AddressMode::Absolute(2);
+    const ABSOLUTE_X: AddressMode = AddressMode::AbsoluteX(2);
+    const ABSOLUTE_Y: AddressMode = AddressMode::AbsoluteY(2);
+    const INDIRECT_X: AddressMode = AddressMode::IndirectX(1);
+    const INDIRECT_Y: AddressMode = AddressMode::IndirectY(1);
 
     fn get_pc_increment(&self) -> u16 {
         match self {
             AddressMode::Immediate(n) => *n,
-            AddressMode::ZeroPage(n)  => *n,
+            AddressMode::ZeroPage(n) => *n,
             AddressMode::ZeroPageX(n) => *n,
             AddressMode::ZeroPageY(n) => *n,
-            AddressMode::Absolute(n)  => *n,
+            AddressMode::Absolute(n) => *n,
             AddressMode::AbsoluteX(n) => *n,
             AddressMode::AbsoluteY(n) => *n,
             AddressMode::IndirectX(n) => *n,
             AddressMode::IndirectY(n) => *n,
-            AddressMode::NoMode => {0},
+            AddressMode::NoMode => 0,
         }
     }
 }
-
 
 /// Struct to hold cpu registers
 #[derive(Copy, Clone)]
