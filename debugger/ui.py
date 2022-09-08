@@ -12,6 +12,12 @@ class UI(tk.Frame):
         self.messages = []
         self.init_ui(ports)
 
+    """
+    When called by the App class
+    this method checks for new messages
+    in the queue and then updates the UI
+    with new data
+    """
     def handle_message(self):
         while self.queue.qsize():
             try:
@@ -83,6 +89,10 @@ class UI(tk.Frame):
 
         self.init_reg_tree()
 
+    """
+    Initializes the Treeview that holds
+    cpu register data
+    """
     def init_reg_tree(self):
         self.reg_label = tk.Label(self.left_frame, text="Registers")
         self.reg_label.pack(fill=tk.X)
@@ -102,6 +112,11 @@ class UI(tk.Frame):
         self.reg_tree.insert("", "end", "x", text="X:", values=[0, 0])
         self.reg_tree.insert("", "end", "y", text="Y:", values=[0, 0])
 
+    """
+    Returns the port selected in the
+    ports list box for the Communicator
+    class to read from
+    """
     def select_port(self):
         try:
             return self.ports[self.port_list.curselection()[0]].device
@@ -114,6 +129,10 @@ class UI(tk.Frame):
     def _stop(self):
         self.started = False
 
+    """
+    Updates cpu register tree with values
+    from data
+    """
     def update_registers(self, data):
         self.update_reg_tree("a", data["registers"]["a"])
         self.update_reg_tree("p", data["registers"]["p"])
@@ -122,16 +141,32 @@ class UI(tk.Frame):
         self.update_reg_tree("x", data["registers"]["x"])
         self.update_reg_tree("y", data["registers"]["y"])
 
+    """
+    Updates the entire tree of cpu registers
+    with the most recently received data
+    """
     def update_reg_tree(self, iid, values):
         if self.reg_tree.exists(iid):
             self.reg_tree.item(iid, values=values)
 
+    """
+    Inserts the most recently received
+    stack data into the stack listbox
+    """
     def update_stack_listbox(self, data):
         self.stack_list.insert(len(self.messages), data["stack"]["value"])
 
+    """
+    Inserts the most recently received
+    instruction into the instruction listbox
+    """
     def update_instruction_listbox(self, data):
         self.instruction_list.insert(len(self.messages), data["instructions"]["value"])
 
+    """
+    Dumps the messages received from the
+    micro controller to a file
+    """
     def dump(self):
         if self.messages:
             with open('dump.txt', 'w') as file:
