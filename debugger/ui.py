@@ -9,20 +9,24 @@ class UI(tk.Frame):
         self.exit = app_quit
         self.started = False
         self.ports = ports
+        self.messages = []
         self.init_ui(ports)
 
     def handle_message(self):
         while self.queue.qsize():
             try:
                 msg = self.queue.get(0)
-                self.update_reg_tree("a", msg)
+                self.messages.append(msg)
+                self.update_registers(msg)
+                self.update_stack_listbox(msg)
+                self.update_instruction_listbox(msg)
             except queue.Empty:
                 pass
 
     def init_ui(self, ports):
         self.pack(fill=tk.BOTH, expand=True)
         self.menu = tk.Menu(self)
-        self.menu.add_command(label="Dump", command=None)
+        self.menu.add_command(label="Dump", command=self.dump)
         self.menu.add_command(label="Exit", command=self.exit)
         self.master.config(menu=self.menu)
 
@@ -82,16 +86,14 @@ class UI(tk.Frame):
     def init_reg_tree(self):
         self.reg_label = tk.Label(self.left_frame, text="Registers")
         self.reg_label.pack(fill=tk.X)
-        self.reg_tree = ttk.Treeview(self.left_frame, columns=["value", "previous"])
+        self.reg_tree = ttk.Treeview(self.left_frame, columns=["value"])
         self.reg_tree.pack(padx=10, pady=10, fill=tk.BOTH, side=tk.LEFT, expand=True)
 
         self.reg_tree.heading("#0", text="Registers")
         self.reg_tree.heading("value", text="Value")
-        self.reg_tree.heading("previous", text="Previous")
 
         self.reg_tree.column("#0", width=50, minwidth=50)
         self.reg_tree.column("value", width=50, minwidth=50)
-        self.reg_tree.column("previous", width=50, minwidth=50)
 
         self.reg_tree.insert("", "end", "a", text="A:", values=[0, 0])
         self.reg_tree.insert("", "end", "p", text="P:", values=[0, 0])
@@ -112,9 +114,27 @@ class UI(tk.Frame):
     def _stop(self):
         self.started = False
 
+    def update_registers(self, data):
+        self.update_reg_tree("a", data["registers"]["a"])
+        self.update_reg_tree("p", data["registers"]["p"])
+        self.update_reg_tree("pc", data["registers"]["pc"])
+        self.update_reg_tree("s", data["registers"]["s"])
+        self.update_reg_tree("x", data["registers"]["x"])
+        self.update_reg_tree("y", data["registers"]["y"])
+
     def update_reg_tree(self, iid, values):
         if self.reg_tree.exists(iid):
             self.reg_tree.item(iid, values=values)
 
+    def update_stack_listbox(self, data):
+        self.stack_list.insert(len(self.messages), data["stack"]["value"])
+
+    def update_instruction_listbox(self, data):
+        self.instruction_list.insert(len(self.messages), data["instructions"]["value"])
+
     def dump(self):
-        pass
+        if self.messages:
+            with open('dump.txt', 'w') as file:
+                for msg in self.messages:
+                    file.write(str(msg) + '\r\n')
+

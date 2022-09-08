@@ -5,7 +5,8 @@ import queue
 import sys
 import tkinter as tk
 import threading
-import time
+import json
+from json.decoder import JSONDecodeError
 
 HEIGHT = 500
 WIDTH = 1000
@@ -49,8 +50,14 @@ class App:
                     self.comm.set_port(self.gui.select_port())
                     if not self.comm.serial.is_open:
                         self.comm.open()
-                    msg = self.comm.readline()
-                    self.queue.put(msg)
+                    data = self.comm.readline()
+                    try:
+                        msg = json.loads(data)
+                        self.queue.put(msg)
+                    except JSONDecodeError:
+                        data = self.comm.readline()
+                        msg = json.loads(data)
+                        self.queue.put(msg)
 
     def quit(self):
         self.running = False
