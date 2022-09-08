@@ -11,13 +11,13 @@ use apu::Apu;
 use cpu::Cpu;
 use ppu::Ppu;
 
-use embedded_graphics::prelude::DrawTarget;
+use embedded_graphics::{draw_target::DrawTarget, pixelcolor::Rgb565, prelude::*};
 use embedded_hal::serial::{Read, Write};
 
 #[cfg(not(feature = "debug"))]
 pub struct Nes<D>
 where
-    D: DrawTarget,
+    D: OriginDimensions + DrawTarget<Color = Rgb565>,
 {
     pub apu: Apu,
     pub cpu: Cpu,
@@ -27,17 +27,21 @@ where
 #[cfg(not(feature = "debug"))]
 impl<D> Nes<D>
 where
-    D: DrawTarget,
+    D: OriginDimensions + DrawTarget<Color = Rgb565>,
 {
-    pub fn new(apu: Apu, cpu: Cpu, ppu: Ppu<D>) -> Self {
-        Self { apu, cpu, ppu }
+    pub fn new(display: D) -> Self {
+        Self {
+            apu: Apu::new(),
+            cpu: Cpu::new(),
+            ppu: Ppu::new(display),
+        }
     }
 }
 
 #[cfg(feature = "debug")]
 pub struct Nes<D, S>
 where
-    D: DrawTarget,
+    D: OriginDimensions + DrawTarget<Color = Rgb565>,
     S: Read<u8> + Write<u8>,
 {
     pub apu: Apu,
@@ -49,14 +53,14 @@ where
 #[cfg(feature = "debug")]
 impl<D, S> Nes<D, S>
 where
-    D: DrawTarget,
+    D: OriginDimensions + DrawTarget<Color = Rgb565>,
     S: Read<u8> + Write<u8>,
 {
-    pub fn new(apu: Apu, cpu: Cpu, ppu: Ppu<D>, serial: S) -> Self {
+    pub fn new(display: D, serial: S) -> Self {
         Self {
-            apu,
-            cpu,
-            ppu,
+            apu: Apu::new(),
+            cpu: Cpu::new(),
+            ppu: Ppu::new(display),
             serial,
         }
     }
