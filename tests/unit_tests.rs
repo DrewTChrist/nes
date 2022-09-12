@@ -193,6 +193,7 @@ mod cpu {
 
     #[test]
     fn _8a() {
+        // txa
         let program: [u8; 2] = [0x8a, 0x00];
         let mut cpu = Cpu::new();
         cpu.load_program(program);

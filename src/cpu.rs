@@ -398,7 +398,6 @@ impl Cpu {
     fn and(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
         self.reg.a &= self.read_mem(address);
-        //self.reg.pc += 1;
         self.reg.pc += address_mode.get_pc_increment();
         self.update_flag(1, self.reg.a == 0);
         self.update_flag(7, self.reg.a & 0b1000_0000 != 0);
@@ -451,7 +450,6 @@ impl Cpu {
     fn dec(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
         let value = self.read_mem(address).wrapping_sub(1);
-        //self.reg.pc += 1;
         self.reg.pc += address_mode.get_pc_increment();
         self.write_mem(address, value);
         self.update_flag(1, value == 0);
@@ -475,7 +473,6 @@ impl Cpu {
     fn inc(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
         let value = self.read_mem(address).wrapping_add(1);
-        //self.reg.pc += 1;
         self.reg.pc += address_mode.get_pc_increment();
         self.write_mem(address, value);
         self.update_flag(1, value == 0);
@@ -501,7 +498,6 @@ impl Cpu {
     fn lda(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
         self.reg.a = self.read_mem(address);
-        //self.reg.pc += 1;
         self.reg.pc += address_mode.get_pc_increment();
         self.update_flag(1, self.reg.a == 0);
         self.update_flag(7, self.reg.a & 0b1000_0000 != 0);
@@ -510,7 +506,6 @@ impl Cpu {
     fn ldx(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
         self.reg.x = self.read_mem(address);
-        //self.reg.pc += 1;
         self.reg.pc += address_mode.get_pc_increment();
         self.update_flag(1, self.reg.x == 0);
         self.update_flag(7, self.reg.x & 0b1000_0000 != 0);
@@ -519,7 +514,6 @@ impl Cpu {
     fn ldy(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
         self.reg.y = self.read_mem(address);
-        //self.reg.pc += 1;
         self.reg.pc += address_mode.get_pc_increment();
         self.update_flag(1, self.reg.y == 0);
         self.update_flag(7, self.reg.y & 0b1000_0000 != 0);
