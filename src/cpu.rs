@@ -290,7 +290,7 @@ impl Cpu {
             0xb6 => self.ldx(AddressMode::ZERO_PAGE_X),
             0xb8 => self.clv(),
             0xb9 => self.lda(AddressMode::ABSOLUTE_Y),
-            0xba => todo!(),
+            0xba => self.tsx(),
             0xbc => self.ldy(AddressMode::ABSOLUTE_X),
             0xbd => self.lda(AddressMode::ABSOLUTE_X),
             0xbe => self.ldx(AddressMode::ABSOLUTE_X),
@@ -521,7 +521,11 @@ impl Cpu {
         self.update_flag(7, self.reg.y & 0b1000_0000 != 0);
     }
 
-    fn tsx(&mut self) {}
+    fn tsx(&mut self) {
+        self.reg.x = self.reg.s;
+        self.update_flag(1, self.reg.x == 0);
+        self.update_flag(7, self.reg.x & 0b1000_0000 != 0);
+    }
 
     fn txa(&mut self) {}
 

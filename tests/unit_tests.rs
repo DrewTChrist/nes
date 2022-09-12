@@ -443,6 +443,20 @@ mod cpu {
     }
 
     #[test]
+    fn _ba() {
+        // tsx
+        let program: [u8; 2] = [0xba, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.s = 0x10;
+        cpu.tick();
+        assert_eq!(cpu.reg.x, 0x10);
+        assert_eq!(cpu.reg.pc, 0x8001);
+        assert!(cpu.reg.p & 0b0000_0010 == 0b00);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
     fn _bc() {
         // ldy absolute x
         let program: [u8; 5] = [0xbc, 0x00, 0x80, 0xa, 0x00];
