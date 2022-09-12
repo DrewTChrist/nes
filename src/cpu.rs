@@ -277,7 +277,7 @@ impl Cpu {
             0xa4 => self.ldy(AddressMode::ZERO_PAGE),
             0xa5 => self.lda(AddressMode::ZERO_PAGE),
             0xa6 => self.ldx(AddressMode::ZERO_PAGE),
-            0xa8 => todo!(),
+            0xa8 => self.tay(),
             0xa9 => self.lda(AddressMode::IMMEDIATE),
             0xaa => self.tax(),
             0xac => self.ldy(AddressMode::ABSOLUTE),
@@ -515,7 +515,11 @@ impl Cpu {
         self.update_flag(7, self.reg.x & 0b1000_0000 != 0);
     }
 
-    fn tay(&mut self) {}
+    fn tay(&mut self) {
+        self.reg.y = self.reg.a;
+        self.update_flag(1, self.reg.y == 0);
+        self.update_flag(7, self.reg.y & 0b1000_0000 != 0);
+    }
 
     fn tsx(&mut self) {}
 

@@ -276,6 +276,20 @@ mod cpu {
     }
 
     #[test]
+    fn _a8() {
+        // tay
+        let program: [u8; 2] = [0xa8, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.reg.a = 10;
+        cpu.load_program(program);
+        cpu.tick();
+        assert_eq!(cpu.reg.y, 10);
+        assert_eq!(cpu.reg.pc, 0x8001);
+        assert!(cpu.reg.p & 0b0000_0010 == 0b00);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
     fn _a9() {
         // lda immediate
         let program: [u8; 3] = [0xa9, 0x05, 0x00];
