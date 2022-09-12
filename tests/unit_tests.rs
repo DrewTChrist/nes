@@ -205,6 +205,18 @@ mod cpu {
     }
 
     #[test]
+    fn _9a() {
+        // txs
+        let program: [u8; 2] = [0x9a, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x10;
+        cpu.tick();
+        assert_eq!(cpu.reg.s, 0x10);
+        assert_eq!(cpu.reg.pc, 0x8001);
+    }
+
+    #[test]
     fn _a0() {
         // ldy immediate
         let program: [u8; 3] = [0xa0, 0xa, 0x00];

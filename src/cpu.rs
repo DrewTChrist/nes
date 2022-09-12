@@ -269,7 +269,7 @@ impl Cpu {
             0x96 => todo!(),
             0x98 => todo!(),
             0x99 => todo!(),
-            0x9a => todo!(),
+            0x9a => self.txs(),
             0x9d => todo!(),
             0xa0 => self.ldy(AddressMode::IMMEDIATE),
             0xa1 => self.lda(AddressMode::INDIRECT_X),
@@ -533,7 +533,9 @@ impl Cpu {
         self.update_flag(7, self.reg.a & 0b1000_0000 != 0);
     }
 
-    fn txs(&mut self) {}
+    fn txs(&mut self) {
+        self.reg.s = self.reg.x;
+    }
 
     fn tya(&mut self) {}
 }
