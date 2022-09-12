@@ -4,6 +4,10 @@ const STACK_SIZE: usize = 0xFF;
 const STACK_BEG: usize = 0x01FF;
 const STACK_END: usize = 0x0100;
 
+fn twos_complement(value: u8) -> u8 {
+    !value + 1
+}
+
 /// Opcode addressing modes
 #[derive(Copy, Clone)]
 enum AddressMode {
@@ -141,8 +145,7 @@ impl Cpu {
 
     pub fn pop_stack(&mut self) -> u8 {
         self.reg.s = self.reg.s.wrapping_add(1);
-        let value = self.read_mem(self.reg.s as u16);
-        value
+        self.read_mem(self.reg.s as u16)
     }
 
     pub fn peek_stack(&mut self, address: u8) -> Option<u8> {
@@ -262,7 +265,7 @@ impl Cpu {
             0x8c => todo!(),
             0x8d => todo!(),
             0x8e => todo!(),
-            0x90 => todo!(),
+            0x90 => self.bcc(),
             0x91 => todo!(),
             0x94 => todo!(),
             0x95 => todo!(),
@@ -405,25 +408,35 @@ impl Cpu {
 
     fn asl(&mut self, address_mode: AddressMode) {}
 
-    fn bcc(&mut self, address_mode: AddressMode) {}
+    fn bcc(&mut self) {
+        if self.reg.p & 0b0000_0001 == 0 {
+            let offset = self.read_mem(self.reg.pc);
+            self.reg.pc += 1;
+            if offset & 0b1000_0000 == 0x80 {
+                self.reg.pc -= twos_complement(offset) as u16;
+            } else {
+                self.reg.pc += offset as u16;
+            }
+        }
+    }
 
-    fn bcs(&mut self, address_mode: AddressMode) {}
+    fn bcs(&mut self) {}
 
-    fn beq(&mut self, address_mode: AddressMode) {}
+    fn beq(&mut self) {}
 
-    fn bit(&mut self, address_mode: AddressMode) {}
+    fn bit(&mut self) {}
 
-    fn bmi(&mut self, address_mode: AddressMode) {}
+    fn bmi(&mut self) {}
 
-    fn bne(&mut self, address_mode: AddressMode) {}
+    fn bne(&mut self) {}
 
-    fn bpl(&mut self, address_mode: AddressMode) {}
+    fn bpl(&mut self) {}
 
     fn brk(&mut self) {}
 
-    fn bvc(&mut self, address_mode: AddressMode) {}
+    fn bvc(&mut self) {}
 
-    fn bvs(&mut self, address_mode: AddressMode) {}
+    fn bvs(&mut self) {}
 
     fn clc(&mut self) {
         self.update_flag(0, false);
