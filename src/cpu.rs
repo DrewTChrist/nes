@@ -267,7 +267,7 @@ impl Cpu {
             0x94 => todo!(),
             0x95 => todo!(),
             0x96 => todo!(),
-            0x98 => todo!(),
+            0x98 => self.tya(),
             0x99 => todo!(),
             0x9a => self.txs(),
             0x9d => todo!(),
@@ -537,5 +537,9 @@ impl Cpu {
         self.reg.s = self.reg.x;
     }
 
-    fn tya(&mut self) {}
+    fn tya(&mut self) {
+        self.reg.a = self.reg.y;
+        self.update_flag(1, self.reg.a == 0);
+        self.update_flag(7, self.reg.a & 0b1000_0000 != 0);
+    }
 }
