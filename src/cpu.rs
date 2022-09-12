@@ -393,6 +393,8 @@ impl Cpu {
         }
     }
 
+    fn adc(&mut self, address_mode: AddressMode) {}
+
     fn and(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
         self.reg.a &= self.read_mem(address);
@@ -401,6 +403,28 @@ impl Cpu {
         self.update_flag(1, self.reg.a == 0);
         self.update_flag(7, self.reg.a & 0b1000_0000 != 0);
     }
+
+    fn asl(&mut self, address_mode: AddressMode) {}
+
+    fn bcc(&mut self, address_mode: AddressMode) {}
+
+    fn bcs(&mut self, address_mode: AddressMode) {}
+
+    fn beq(&mut self, address_mode: AddressMode) {}
+
+    fn bit(&mut self, address_mode: AddressMode) {}
+
+    fn bmi(&mut self, address_mode: AddressMode) {}
+
+    fn bne(&mut self, address_mode: AddressMode) {}
+
+    fn bpl(&mut self, address_mode: AddressMode) {}
+
+    fn brk(&mut self) {}
+
+    fn bvc(&mut self, address_mode: AddressMode) {}
+
+    fn bvs(&mut self, address_mode: AddressMode) {}
 
     fn clc(&mut self) {
         self.update_flag(0, false);
@@ -417,6 +441,12 @@ impl Cpu {
     fn clv(&mut self) {
         self.update_flag(6, false);
     }
+
+    fn cmp(&mut self, address_mode: AddressMode) {}
+
+    fn cpx(&mut self, address_mode: AddressMode) {}
+
+    fn cpy(&mut self, address_mode: AddressMode) {}
 
     fn dec(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
@@ -440,6 +470,8 @@ impl Cpu {
         self.update_flag(7, self.reg.y & 0b1000_0000 != 0);
     }
 
+    fn eor(&mut self, address_mode: AddressMode) {}
+
     fn inc(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
         let value = self.read_mem(address).wrapping_add(1);
@@ -461,6 +493,10 @@ impl Cpu {
         self.update_flag(1, self.reg.y == 0);
         self.update_flag(7, self.reg.y & 0b1000_0000 != 0);
     }
+
+    fn jmp(&mut self, address_mode: AddressMode) {}
+
+    fn jsr(&mut self, address_mode: AddressMode) {}
 
     fn lda(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
@@ -489,7 +525,29 @@ impl Cpu {
         self.update_flag(7, self.reg.y & 0b1000_0000 != 0);
     }
 
+    fn lsr(&mut self, address_mode: AddressMode) {}
+
     fn nop(&self) {}
+
+    fn ora(&mut self, address_mode: AddressMode) {}
+
+    fn pha(&mut self) {}
+
+    fn php(&mut self) {}
+
+    fn pla(&mut self) {}
+
+    fn plp(&mut self) {}
+
+    fn rol(&mut self, address_mode: AddressMode) {}
+
+    fn ror(&mut self, address_mode: AddressMode) {}
+
+    fn rti(&mut self) {}
+
+    fn rts(&mut self) {}
+
+    fn sbc(&mut self, address_mode: AddressMode) {}
 
     fn sec(&mut self) {
         self.update_flag(0, true);
