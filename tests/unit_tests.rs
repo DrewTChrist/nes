@@ -654,6 +654,26 @@ mod cpu {
     }
 
     #[test]
+    fn _d0_pos() {
+        // bne with a positive relative offset
+        let program: [u8; 3] = [0xd0, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x8066);
+    }
+
+    #[test]
+    fn _d0_neg() {
+        // bne with a negative relative offset
+        let program: [u8; 3] = [0xd0, 0x9c, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x7f9e);
+    }
+
+    #[test]
     fn _d6() {
         // dec zero page x
         let program: [u8; 3] = [0xd6, 0x05, 0x00];

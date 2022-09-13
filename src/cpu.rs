@@ -355,7 +355,7 @@ impl Cpu {
             0xcc => todo!(),
             0xcd => todo!(),
             0xce => self.dec(AddressMode::ABSOLUTE),
-            0xd0 => todo!(),
+            0xd0 => self.bne(),
             0xd1 => todo!(),
             0xd5 => todo!(),
             0xd6 => self.dec(AddressMode::ZERO_PAGE_X),
@@ -500,7 +500,17 @@ impl Cpu {
         }
     }
 
-    fn bne(&mut self) {}
+    fn bne(&mut self) {
+        if self.reg.p & 0b0000_0010 == 0 {
+            let offset = self.read_mem(self.reg.pc);
+            self.reg.pc += 1;
+            if is_negative(offset) {
+                self.reg.pc -= twos_complement(offset) as u16;
+            } else {
+                self.reg.pc += offset as u16;
+            }
+        }
+    }
 
     fn bpl(&mut self) {}
 
