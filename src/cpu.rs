@@ -115,12 +115,12 @@ impl Registers {
 }
 
 enum Flag {
-    Carry,
-    Zero,
-    InterruptDisable,
-    DecimalMode,
-    Overflow,
-    Negative,
+    Carry = 0,
+    Zero = 1,
+    InterruptDisable = 2,
+    DecimalMode = 3,
+    Overflow = 6,
+    Negative = 7,
 }
 
 /// Cpu Struct
@@ -326,7 +326,7 @@ impl Cpu {
             0xac => self.ldy(AddressMode::ABSOLUTE),
             0xad => self.lda(AddressMode::ABSOLUTE),
             0xae => self.ldx(AddressMode::ABSOLUTE),
-            0xb0 => todo!(),
+            0xb0 => self.bcs(),
             0xb1 => self.lda(AddressMode::INDIRECT_Y),
             0xb4 => self.ldy(AddressMode::ZERO_PAGE_X),
             0xb5 => self.lda(AddressMode::ZERO_PAGE_X),
@@ -455,7 +455,17 @@ impl Cpu {
         }
     }
 
-    fn bcs(&mut self) {}
+    fn bcs(&mut self) {
+        if self.reg.p & 0b0000_0001 != 0 {
+            let offset = self.read_mem(self.reg.pc);
+            self.reg.pc += 1;
+            if offset & 0b1000_0000 == 0x80 {
+                self.reg.pc -= twos_complement(offset) as u16;
+            } else {
+                self.reg.pc += offset as u16;
+            }
+        }
+    }
 
     fn beq(&mut self) {}
 

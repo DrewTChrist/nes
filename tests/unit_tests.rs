@@ -416,6 +416,28 @@ mod cpu {
     }
 
     #[test]
+    fn _b0_pos() {
+        // bcs with a positive relative offset
+        let program: [u8; 3] = [0xb0, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.p |= 0b0000_0001;
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x8066);
+    }
+
+    #[test]
+    fn _b0_neg() {
+        // bcs with a negative relative offset
+        let program: [u8; 3] = [0xb0, 0x9c, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.p |= 0b0000_0001;
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x7f9e);
+    }
+
+    #[test]
     fn _b1() {
         // lda indirect y
         let program: [u8; 4] = [0xb1, 0x05, 0xb, 0x00];
@@ -721,6 +743,7 @@ mod cpu {
 
     #[test]
     fn five_ops() {
+        // Just tests five consecutive opcodes
         let program: [u8; 5] = [0xa9, 0xc0, 0xaa, 0xe8, 0x00];
         let mut cpu = Cpu::new();
         cpu.load_program(program);
@@ -733,6 +756,7 @@ mod cpu {
 
     #[test]
     fn dec_test() {
+        // Tests repeated decrements
         let program: [u8; 19] = [
             0xce, 0x05, 0x00, 0xce, 0x05, 0x00, 0xce, 0x05, 0x00, 0xce, 0x05, 0x00, 0xce, 0x05,
             0x00, 0xce, 0x05, 0x00, 0x00,
