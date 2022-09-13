@@ -240,7 +240,7 @@ impl Cpu {
             0x0a => todo!(),
             0x0d => todo!(),
             0x0e => todo!(),
-            0x10 => todo!(),
+            0x10 => self.bpl(),
             0x11 => todo!(),
             0x15 => todo!(),
             0x16 => todo!(),
@@ -512,7 +512,17 @@ impl Cpu {
         }
     }
 
-    fn bpl(&mut self) {}
+    fn bpl(&mut self) {
+        if self.reg.p & 0b1000_0000 == 0 {
+            let offset = self.read_mem(self.reg.pc);
+            self.reg.pc += 1;
+            if is_negative(offset) {
+                self.reg.pc -= twos_complement(offset) as u16;
+            } else {
+                self.reg.pc += offset as u16;
+            }
+        }
+    }
 
     fn brk(&mut self) {}
 
