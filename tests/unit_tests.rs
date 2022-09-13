@@ -665,6 +665,36 @@ mod cpu {
     }
 
     #[test]
+    fn _c1_pos() {
+        // cmp indirect x
+    }
+
+    #[test]
+    fn _c1_eq() {
+        // cmp indirect x
+    }
+
+    #[test]
+    fn _c1_neg() {
+        // cmp indirect x
+    }
+
+    #[test]
+    fn _c5_pos() {
+        // cmp zero page
+    }
+
+    #[test]
+    fn _c5_eq() {
+        // cmp zero page
+    }
+
+    #[test]
+    fn _c5_neg() {
+        // cmp zero page
+    }
+
+    #[test]
     fn _c6() {
         // dec zero page
         let program: [u8; 3] = [0xc6, 0x05, 0x00];
@@ -690,6 +720,21 @@ mod cpu {
     }
 
     #[test]
+    fn _c9_pos() {
+        // cmp immediate
+    }
+
+    #[test]
+    fn _c9_eq() {
+        // cmp immediate
+    }
+
+    #[test]
+    fn _c9_neg() {
+        // cmp immediate
+    }
+
+    #[test]
     fn _ca() {
         // dex
         let program: [u8; 3] = [0xca, 0xca, 0x00];
@@ -702,6 +747,21 @@ mod cpu {
         assert_eq!(cpu.reg.x, 3);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _cd_pos() {
+        // cmp absolute
+    }
+
+    #[test]
+    fn _cd_eq() {
+        // cmp absolute
+    }
+
+    #[test]
+    fn _cd_neg() {
+        // cmp absolute
     }
 
     #[test]
@@ -736,6 +796,36 @@ mod cpu {
     }
 
     #[test]
+    fn _d1_pos() {
+        // cmp indirect y
+    }
+
+    #[test]
+    fn _d1_eq() {
+        // cmp indirect y
+    }
+
+    #[test]
+    fn _d1_neg() {
+        // cmp indirect y
+    }
+
+    #[test]
+    fn _d5_pos() {
+        // cmp zero page x
+    }
+
+    #[test]
+    fn _d5_eq() {
+        // cmp zero page x
+    }
+
+    #[test]
+    fn _d5_neg() {
+        // cmp zero page x
+    }
+
+    #[test]
     fn _d6() {
         // dec zero page x
         let program: [u8; 3] = [0xd6, 0x05, 0x00];
@@ -758,6 +848,36 @@ mod cpu {
         cpu.tick();
         assert_eq!(cpu.reg.pc, 0x8001);
         assert!(cpu.reg.p & 0b0000_1000 == 0b00);
+    }
+
+    #[test]
+    fn _d9_pos() {
+        // cmp absolute y
+    }
+
+    #[test]
+    fn _d9_eq() {
+        // cmp absolute y
+    }
+
+    #[test]
+    fn _d9_neg() {
+        // cmp absolute y
+    }
+
+    #[test]
+    fn _dd_pos() {
+        // cmp absolute x
+    }
+
+    #[test]
+    fn _dd_eq() {
+        // cmp absolute x
+    }
+
+    #[test]
+    fn _dd_neg() {
+        // cmp absolute x
     }
 
     #[test]

@@ -27,7 +27,6 @@ enum AddressMode {
     AbsoluteY(u16),
     IndirectX(u16),
     IndirectY(u16),
-    NoMode,
 }
 
 impl AddressMode {
@@ -52,7 +51,6 @@ impl AddressMode {
             AddressMode::AbsoluteY(n) => *n,
             AddressMode::IndirectX(n) => *n,
             AddressMode::IndirectY(n) => *n,
-            AddressMode::NoMode => 0,
         }
     }
 }
@@ -345,22 +343,22 @@ impl Cpu {
             0xbd => self.lda(AddressMode::ABSOLUTE_X),
             0xbe => self.ldx(AddressMode::ABSOLUTE_X),
             0xc0 => todo!(),
-            0xc1 => todo!(),
+            0xc1 => self.cmp(AddressMode::INDIRECT_X),
             0xc4 => todo!(),
-            0xc5 => todo!(),
+            0xc5 => self.cmp(AddressMode::ZERO_PAGE),
             0xc6 => self.dec(AddressMode::ZERO_PAGE),
             0xc8 => self.iny(),
-            0xc9 => todo!(),
+            0xc9 => self.cmp(AddressMode::IMMEDIATE),
             0xca => self.dex(),
             0xcc => todo!(),
-            0xcd => todo!(),
+            0xcd => self.cmp(AddressMode::ABSOLUTE),
             0xce => self.dec(AddressMode::ABSOLUTE),
             0xd0 => self.bne(),
-            0xd1 => todo!(),
-            0xd5 => todo!(),
+            0xd1 => self.cmp(AddressMode::INDIRECT_Y),
+            0xd5 => self.cmp(AddressMode::ZERO_PAGE_X),
             0xd6 => self.dec(AddressMode::ZERO_PAGE_X),
-            0xd9 => todo!(),
-            0xdd => todo!(),
+            0xd9 => self.cmp(AddressMode::ABSOLUTE_Y),
+            0xdd => self.cmp(AddressMode::ABSOLUTE_X),
             0xde => self.dec(AddressMode::ABSOLUTE_X),
             0xd8 => self.cld(),
             0xe0 => todo!(),
@@ -388,50 +386,33 @@ impl Cpu {
 
     /// Gets an address for an instruction based on an addressing mode
     fn get_address(&mut self, address_mode: AddressMode) -> u16 {
-        let mut addr: u16 = 0;
         match address_mode {
-            AddressMode::Immediate(u16) => {
-                addr = self.reg.pc;
-            }
-            AddressMode::ZeroPage(u16) => {
-                addr = self.read_mem(self.reg.pc) as u16;
-            }
-            AddressMode::ZeroPageX(u16) => {
-                addr = self.read_mem(self.reg.pc).wrapping_add(self.reg.x) as u16;
-            }
-            AddressMode::ZeroPageY(u16) => {
-                addr = self.read_mem(self.reg.pc).wrapping_add(self.reg.y) as u16;
-            }
-            AddressMode::Absolute(u16) => {
-                addr = self.read_mem_u16(self.reg.pc);
-            }
-            AddressMode::AbsoluteX(u16) => {
-                addr = self
-                    .read_mem_u16(self.reg.pc)
-                    .wrapping_add(self.reg.x as u16);
-            }
-            AddressMode::AbsoluteY(u16) => {
-                addr = self
-                    .read_mem_u16(self.reg.pc)
-                    .wrapping_add(self.reg.y as u16);
-            }
-            AddressMode::IndirectX(u16) => {
+            AddressMode::Immediate(_) => self.reg.pc,
+            AddressMode::ZeroPage(_) => self.read_mem(self.reg.pc) as u16,
+            AddressMode::ZeroPageX(_) => self.read_mem(self.reg.pc).wrapping_add(self.reg.x) as u16,
+            AddressMode::ZeroPageY(_) => self.read_mem(self.reg.pc).wrapping_add(self.reg.y) as u16,
+            AddressMode::Absolute(_) => self.read_mem_u16(self.reg.pc),
+            AddressMode::AbsoluteX(_) => self
+                .read_mem_u16(self.reg.pc)
+                .wrapping_add(self.reg.x as u16),
+            AddressMode::AbsoluteY(_) => self
+                .read_mem_u16(self.reg.pc)
+                .wrapping_add(self.reg.y as u16),
+            AddressMode::IndirectX(_) => {
                 let base = self.read_mem(self.reg.pc);
                 let ptr: u8 = (base as u8).wrapping_add(self.reg.x);
                 let lo = self.read_mem(ptr as u16);
                 let hi = self.read_mem(ptr.wrapping_add(1) as u16);
-                addr = (hi as u16) << 8 | (lo as u16)
+                (hi as u16) << 8 | (lo as u16)
             }
-            AddressMode::IndirectY(u16) => {
+            AddressMode::IndirectY(_) => {
                 let base = self.read_mem(self.reg.pc);
                 let lo = self.read_mem(base as u16);
                 let hi = self.read_mem((base as u8).wrapping_add(1) as u16);
                 let deref_base = (hi as u16) << 8 | (lo as u16);
-                addr = deref_base.wrapping_add(self.reg.y as u16);
+                deref_base.wrapping_add(self.reg.y as u16)
             }
-            AddressMode::NoMode => {}
         }
-        addr
     }
 
     fn adc(&mut self, address_mode: AddressMode) {}
@@ -566,7 +547,20 @@ impl Cpu {
         self.reg.disable_flag(Flag::Overflow);
     }
 
-    fn cmp(&mut self, address_mode: AddressMode) {}
+    fn cmp(&mut self, address_mode: AddressMode) {
+        let address = self.get_address(address_mode);
+        let value = self.read_mem(address);
+        self.reg.pc += address_mode.get_pc_increment();
+        if self.reg.a >= value {
+            self.reg.enable_flag(Flag::Carry);
+        }
+        if self.reg.a == value {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if is_negative(self.reg.a.wrapping_sub(value)) {
+            self.reg.enable_flag(Flag::Negative);
+        }
+    }
 
     fn cpx(&mut self, address_mode: AddressMode) {}
 
