@@ -667,16 +667,53 @@ mod cpu {
     #[test]
     fn _c1_pos() {
         // cmp indirect x
+        // P >= M
+        let program: [u8; 4] = [0xc1, 0x64, 0x32, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x64;
+        cpu.reg.a = 0x64;
+        cpu.write_mem(0xc8, 0x02);
+        cpu.write_mem(0xc9, 0x80);
+        cpu.tick();
+        println!("{}", cpu.reg.p);
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
 
     #[test]
     fn _c1_eq() {
         // cmp indirect x
+        // P == M
+        let program: [u8; 4] = [0xc1, 0x64, 0x32, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x64;
+        cpu.reg.a = 0x32;
+        cpu.write_mem(0xc8, 0x02);
+        cpu.write_mem(0xc9, 0x80);
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 != 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
 
     #[test]
     fn _c1_neg() {
         // cmp indirect x
+        // P < M
+        let program: [u8; 4] = [0xc1, 0x64, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x64;
+        cpu.reg.a = 0x32;
+        cpu.write_mem(0xc8, 0x02);
+        cpu.write_mem(0xc9, 0x80);
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 == 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 != 0);
     }
 
     #[test]
