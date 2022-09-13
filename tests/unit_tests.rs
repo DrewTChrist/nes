@@ -195,6 +195,26 @@ mod cpu {
     }
 
     #[test]
+    fn _50_pos() {
+        // bvc with a positive relative offset
+        let program: [u8; 3] = [0x10, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x8066);
+    }
+
+    #[test]
+    fn _50_neg() {
+        // bvc with a negative relative offset
+        let program: [u8; 3] = [0x10, 0x9c, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x7f9e);
+    }
+
+    #[test]
     fn _58() {
         // cli
         let program: [u8; 1] = [0x58];

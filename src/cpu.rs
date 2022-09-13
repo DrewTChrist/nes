@@ -277,7 +277,7 @@ impl Cpu {
             0x4c => todo!(),
             0x4d => todo!(),
             0x4e => todo!(),
-            0x50 => todo!(),
+            0x50 => self.bvc(),
             0x51 => todo!(),
             0x55 => todo!(),
             0x56 => todo!(),
@@ -526,7 +526,17 @@ impl Cpu {
 
     fn brk(&mut self) {}
 
-    fn bvc(&mut self) {}
+    fn bvc(&mut self) {
+        if self.reg.p & 0b0100_0000 == 0 {
+            let offset = self.read_mem(self.reg.pc);
+            self.reg.pc += 1;
+            if is_negative(offset) {
+                self.reg.pc -= twos_complement(offset) as u16;
+            } else {
+                self.reg.pc += offset as u16;
+            }
+        }
+    }
 
     fn bvs(&mut self) {}
 
