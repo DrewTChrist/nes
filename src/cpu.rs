@@ -81,6 +81,46 @@ impl Registers {
         self.s = 0;
         self.p = 0;
     }
+
+    fn update_flag(&mut self, flag: u8, condition: bool) {
+        let flag_bit: u8 = 1 << flag;
+        if condition {
+            self.p |= flag_bit;
+        } else {
+            self.p &= !flag_bit;
+        }
+    }
+
+    fn enable_flag(&mut self, flag: Flag) {
+        match flag {
+            Flag::Carry => self.update_flag(0, true),
+            Flag::Zero => self.update_flag(1, true),
+            Flag::InterruptDisable => self.update_flag(2, true),
+            Flag::DecimalMode => self.update_flag(3, true),
+            Flag::Overflow => self.update_flag(6, true),
+            Flag::Negative => self.update_flag(7, true),
+        }
+    }
+
+    fn disable_flag(&mut self, flag: Flag) {
+        match flag {
+            Flag::Carry => self.update_flag(0, false),
+            Flag::Zero => self.update_flag(1, false),
+            Flag::InterruptDisable => self.update_flag(2, false),
+            Flag::DecimalMode => self.update_flag(3, false),
+            Flag::Overflow => self.update_flag(6, false),
+            Flag::Negative => self.update_flag(7, false),
+        }
+    }
+}
+
+enum Flag {
+    Carry,
+    Zero,
+    InterruptDisable,
+    DecimalMode,
+    Overflow,
+    Negative,
 }
 
 /// Cpu Struct
@@ -387,23 +427,18 @@ impl Cpu {
         addr
     }
 
-    fn update_flag(&mut self, flag: u8, condition: bool) {
-        let flag_bit: u8 = 1 << flag;
-        if condition {
-            self.reg.p |= flag_bit;
-        } else {
-            self.reg.p &= !flag_bit;
-        }
-    }
-
     fn adc(&mut self, address_mode: AddressMode) {}
 
     fn and(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
         self.reg.a &= self.read_mem(address);
         self.reg.pc += address_mode.get_pc_increment();
-        self.update_flag(1, self.reg.a == 0);
-        self.update_flag(7, self.reg.a & 0b1000_0000 != 0);
+        if self.reg.a == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if self.reg.a & 0b1000_0000 != 0 {
+            self.reg.enable_flag(Flag::Negative);
+        }
     }
 
     fn asl(&mut self, address_mode: AddressMode) {}
@@ -439,19 +474,19 @@ impl Cpu {
     fn bvs(&mut self) {}
 
     fn clc(&mut self) {
-        self.update_flag(0, false);
+        self.reg.disable_flag(Flag::Carry);
     }
 
     fn cld(&mut self) {
-        self.update_flag(3, false);
+        self.reg.disable_flag(Flag::DecimalMode);
     }
 
     fn cli(&mut self) {
-        self.update_flag(2, false);
+        self.reg.disable_flag(Flag::InterruptDisable);
     }
 
     fn clv(&mut self) {
-        self.update_flag(6, false);
+        self.reg.disable_flag(Flag::Overflow);
     }
 
     fn cmp(&mut self, address_mode: AddressMode) {}
@@ -465,20 +500,32 @@ impl Cpu {
         let value = self.read_mem(address).wrapping_sub(1);
         self.reg.pc += address_mode.get_pc_increment();
         self.write_mem(address, value);
-        self.update_flag(1, value == 0);
-        self.update_flag(7, value & 0b1000_0000 != 0);
+        if value == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if value & 0b1000_0000 != 0 {
+            self.reg.enable_flag(Flag::Negative);
+        }
     }
 
     fn dex(&mut self) {
         self.reg.x = self.reg.x.wrapping_sub(1);
-        self.update_flag(1, self.reg.x == 0);
-        self.update_flag(7, self.reg.x & 0b1000_0000 != 0);
+        if self.reg.x == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if self.reg.x & 0b1000_0000 != 0 {
+            self.reg.enable_flag(Flag::Negative);
+        }
     }
 
     fn dey(&mut self) {
         self.reg.y = self.reg.y.wrapping_sub(1);
-        self.update_flag(1, self.reg.y == 0);
-        self.update_flag(7, self.reg.y & 0b1000_0000 != 0);
+        if self.reg.y == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if self.reg.y & 0b1000_0000 != 0 {
+            self.reg.enable_flag(Flag::Negative);
+        }
     }
 
     fn eor(&mut self, address_mode: AddressMode) {}
@@ -488,20 +535,32 @@ impl Cpu {
         let value = self.read_mem(address).wrapping_add(1);
         self.reg.pc += address_mode.get_pc_increment();
         self.write_mem(address, value);
-        self.update_flag(1, value == 0);
-        self.update_flag(7, value & 0b1000_0000 != 0);
+        if value == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if value & 0b1000_0000 != 0 {
+            self.reg.enable_flag(Flag::Negative);
+        }
     }
 
     fn inx(&mut self) {
         self.reg.x = self.reg.x.wrapping_add(1);
-        self.update_flag(1, self.reg.x == 0);
-        self.update_flag(7, self.reg.x & 0b1000_0000 != 0);
+        if self.reg.x == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if self.reg.x & 0b1000_0000 != 0 {
+            self.reg.enable_flag(Flag::Negative);
+        }
     }
 
     fn iny(&mut self) {
         self.reg.y = self.reg.y.wrapping_add(1);
-        self.update_flag(1, self.reg.y == 0);
-        self.update_flag(7, self.reg.y & 0b1000_0000 != 0);
+        if self.reg.y == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if self.reg.y & 0b1000_0000 != 0 {
+            self.reg.enable_flag(Flag::Negative);
+        }
     }
 
     fn jmp(&mut self, address_mode: AddressMode) {}
@@ -512,24 +571,36 @@ impl Cpu {
         let address = self.get_address(address_mode);
         self.reg.a = self.read_mem(address);
         self.reg.pc += address_mode.get_pc_increment();
-        self.update_flag(1, self.reg.a == 0);
-        self.update_flag(7, self.reg.a & 0b1000_0000 != 0);
+        if self.reg.a == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if self.reg.a & 0b1000_0000 != 0 {
+            self.reg.enable_flag(Flag::Negative);
+        }
     }
 
     fn ldx(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
         self.reg.x = self.read_mem(address);
         self.reg.pc += address_mode.get_pc_increment();
-        self.update_flag(1, self.reg.x == 0);
-        self.update_flag(7, self.reg.x & 0b1000_0000 != 0);
+        if self.reg.x == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if self.reg.x & 0b1000_0000 != 0 {
+            self.reg.enable_flag(Flag::Negative);
+        }
     }
 
     fn ldy(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
         self.reg.y = self.read_mem(address);
         self.reg.pc += address_mode.get_pc_increment();
-        self.update_flag(1, self.reg.y == 0);
-        self.update_flag(7, self.reg.y & 0b1000_0000 != 0);
+        if self.reg.y == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if self.reg.y & 0b1000_0000 != 0 {
+            self.reg.enable_flag(Flag::Negative);
+        }
     }
 
     fn lsr(&mut self, address_mode: AddressMode) {}
@@ -557,15 +628,15 @@ impl Cpu {
     fn sbc(&mut self, address_mode: AddressMode) {}
 
     fn sec(&mut self) {
-        self.update_flag(0, true);
+        self.reg.enable_flag(Flag::Carry);
     }
 
     fn sed(&mut self) {
-        self.update_flag(3, true);
+        self.reg.enable_flag(Flag::DecimalMode);
     }
 
     fn sei(&mut self) {
-        self.update_flag(2, true);
+        self.reg.enable_flag(Flag::InterruptDisable);
     }
 
     fn sta(&mut self, address_mode: AddressMode) {}
@@ -576,26 +647,42 @@ impl Cpu {
 
     fn tax(&mut self) {
         self.reg.x = self.reg.a;
-        self.update_flag(1, self.reg.x == 0);
-        self.update_flag(7, self.reg.x & 0b1000_0000 != 0);
+        if self.reg.x == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if self.reg.x & 0b1000_0000 != 0 {
+            self.reg.enable_flag(Flag::Negative);
+        }
     }
 
     fn tay(&mut self) {
         self.reg.y = self.reg.a;
-        self.update_flag(1, self.reg.y == 0);
-        self.update_flag(7, self.reg.y & 0b1000_0000 != 0);
+        if self.reg.y == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if self.reg.y & 0b1000_0000 != 0 {
+            self.reg.enable_flag(Flag::Negative);
+        }
     }
 
     fn tsx(&mut self) {
         self.reg.x = self.reg.s;
-        self.update_flag(1, self.reg.x == 0);
-        self.update_flag(7, self.reg.x & 0b1000_0000 != 0);
+        if self.reg.x == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if self.reg.x & 0b1000_0000 != 0 {
+            self.reg.enable_flag(Flag::Negative);
+        }
     }
 
     fn txa(&mut self) {
         self.reg.a = self.reg.x;
-        self.update_flag(1, self.reg.a == 0);
-        self.update_flag(7, self.reg.a & 0b1000_0000 != 0);
+        if self.reg.a == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if self.reg.a & 0b1000_0000 != 0 {
+            self.reg.enable_flag(Flag::Negative);
+        }
     }
 
     fn txs(&mut self) {
@@ -604,7 +691,11 @@ impl Cpu {
 
     fn tya(&mut self) {
         self.reg.a = self.reg.y;
-        self.update_flag(1, self.reg.a == 0);
-        self.update_flag(7, self.reg.a & 0b1000_0000 != 0);
+        if self.reg.a == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if self.reg.a & 0b1000_0000 != 0 {
+            self.reg.enable_flag(Flag::Negative);
+        }
     }
 }
