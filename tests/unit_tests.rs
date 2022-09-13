@@ -705,6 +705,28 @@ mod cpu {
     }
 
     #[test]
+    fn _f0_pos() {
+        // beq with a positive relative offset
+        let program: [u8; 3] = [0xf0, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.p |= 0b0000_0010;
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x8066);
+    }
+
+    #[test]
+    fn _f0_neg() {
+        // beq with a negative relative offset
+        let program: [u8; 3] = [0xf0, 0x9c, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.p |= 0b0000_0010;
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x7f9e);
+    }
+
+    #[test]
     fn _f6() {
         // inc zero page x
         let program: [u8; 3] = [0xf6, 0x05, 0x00];

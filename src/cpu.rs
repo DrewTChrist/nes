@@ -367,7 +367,7 @@ impl Cpu {
             0xec => todo!(),
             0xed => todo!(),
             0xee => self.inc(AddressMode::ABSOLUTE),
-            0xf0 => todo!(),
+            0xf0 => self.beq(),
             0xf1 => todo!(),
             0xf5 => todo!(),
             0xf6 => self.inc(AddressMode::ZERO_PAGE_X),
@@ -467,7 +467,17 @@ impl Cpu {
         }
     }
 
-    fn beq(&mut self) {}
+    fn beq(&mut self) {
+        if self.reg.p & 0b0000_0010 != 0 {
+            let offset = self.read_mem(self.reg.pc);
+            self.reg.pc += 1;
+            if offset & 0b1000_0000 == 0x80 {
+                self.reg.pc -= twos_complement(offset) as u16;
+            } else {
+                self.reg.pc += offset as u16;
+            }
+        }
+    }
 
     fn bit(&mut self) {}
 
