@@ -296,7 +296,7 @@ impl Cpu {
             0x6c => todo!(),
             0x6d => todo!(),
             0x6e => todo!(),
-            0x70 => todo!(),
+            0x70 => self.bvs(),
             0x71 => todo!(),
             0x75 => todo!(),
             0x78 => self.sei(),
@@ -538,7 +538,17 @@ impl Cpu {
         }
     }
 
-    fn bvs(&mut self) {}
+    fn bvs(&mut self) {
+        if self.reg.p & 0b0100_0000 != 0 {
+            let offset = self.read_mem(self.reg.pc);
+            self.reg.pc += 1;
+            if is_negative(offset) {
+                self.reg.pc -= twos_complement(offset) as u16;
+            } else {
+                self.reg.pc += offset as u16;
+            }
+        }
+    }
 
     fn clc(&mut self) {
         self.reg.disable_flag(Flag::Carry);

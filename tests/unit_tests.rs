@@ -227,6 +227,28 @@ mod cpu {
     }
 
     #[test]
+    fn _70_pos() {
+        // bvs with a positive relative offset
+        let program: [u8; 3] = [0x70, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.p |= 0b0100_0000;
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x8066);
+    }
+
+    #[test]
+    fn _70_neg() {
+        // bvs with a negative relative offset
+        let program: [u8; 3] = [0x70, 0x9c, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.p |= 0b0100_0000;
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x7f9e);
+    }
+
+    #[test]
     fn _78() {
         // sei
         let program: [u8; 1] = [0x78];
