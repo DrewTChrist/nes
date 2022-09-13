@@ -78,6 +78,28 @@ mod cpu {
     }
 
     #[test]
+    fn _30_pos() {
+        // bmi with a positive relative offset
+        let program: [u8; 3] = [0x30, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.p |= 0b1000_0000;
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x8066);
+    }
+
+    #[test]
+    fn _30_neg() {
+        // bmi with a negative relative offset
+        let program: [u8; 3] = [0x30, 0x9c, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.p |= 0b1000_0000;
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x7f9e);
+    }
+
+    #[test]
     fn _31() {
         // and indirect y
         let program: [u8; 4] = [0x31, 0x05, 0x08, 0x00];

@@ -252,7 +252,7 @@ impl Cpu {
             0x2c => todo!(),
             0x2e => todo!(),
             0x2d => self.and(AddressMode::ABSOLUTE),
-            0x30 => todo!(),
+            0x30 => self.bmi(),
             0x31 => self.and(AddressMode::INDIRECT_Y),
             0x35 => self.and(AddressMode::ZERO_PAGE_X),
             0x36 => todo!(),
@@ -479,9 +479,19 @@ impl Cpu {
         }
     }
 
-    fn bit(&mut self) {}
+    fn bit(&mut self, address_mode: AddressMode) {}
 
-    fn bmi(&mut self) {}
+    fn bmi(&mut self) {
+        if self.reg.p & 0b1000_0000 != 0 {
+            let offset = self.read_mem(self.reg.pc);
+            self.reg.pc += 1;
+            if offset & 0b1000_0000 == 0x80 {
+                self.reg.pc -= twos_complement(offset) as u16;
+            } else {
+                self.reg.pc += offset as u16;
+            }
+        }
+    }
 
     fn bne(&mut self) {}
 
