@@ -4,8 +4,15 @@ const STACK_SIZE: usize = 0xFF;
 const STACK_BEG: usize = 0x01FF;
 const STACK_END: usize = 0x0100;
 
+/// Does twos complement on a value
 fn twos_complement(value: u8) -> u8 {
     !value + 1
+}
+
+/// Checks if the 8th bit of a u8
+/// is on mostly for readability
+fn is_negative(value: u8) -> bool {
+    value & 0x80 == 0x80
 }
 
 /// Opcode addressing modes
@@ -436,7 +443,7 @@ impl Cpu {
         if self.reg.a == 0 {
             self.reg.enable_flag(Flag::Zero);
         }
-        if self.reg.a & 0b1000_0000 != 0 {
+        if is_negative(self.reg.a) {
             self.reg.enable_flag(Flag::Negative);
         }
     }
@@ -447,7 +454,7 @@ impl Cpu {
         if self.reg.p & 0b0000_0001 == 0 {
             let offset = self.read_mem(self.reg.pc);
             self.reg.pc += 1;
-            if offset & 0b1000_0000 == 0x80 {
+            if is_negative(offset) {
                 self.reg.pc -= twos_complement(offset) as u16;
             } else {
                 self.reg.pc += offset as u16;
@@ -459,7 +466,7 @@ impl Cpu {
         if self.reg.p & 0b0000_0001 != 0 {
             let offset = self.read_mem(self.reg.pc);
             self.reg.pc += 1;
-            if offset & 0b1000_0000 == 0x80 {
+            if is_negative(offset) {
                 self.reg.pc -= twos_complement(offset) as u16;
             } else {
                 self.reg.pc += offset as u16;
@@ -471,7 +478,7 @@ impl Cpu {
         if self.reg.p & 0b0000_0010 != 0 {
             let offset = self.read_mem(self.reg.pc);
             self.reg.pc += 1;
-            if offset & 0b1000_0000 == 0x80 {
+            if is_negative(offset) {
                 self.reg.pc -= twos_complement(offset) as u16;
             } else {
                 self.reg.pc += offset as u16;
@@ -485,7 +492,7 @@ impl Cpu {
         if self.reg.p & 0b1000_0000 != 0 {
             let offset = self.read_mem(self.reg.pc);
             self.reg.pc += 1;
-            if offset & 0b1000_0000 == 0x80 {
+            if is_negative(offset) {
                 self.reg.pc -= twos_complement(offset) as u16;
             } else {
                 self.reg.pc += offset as u16;
@@ -533,7 +540,7 @@ impl Cpu {
         if value == 0 {
             self.reg.enable_flag(Flag::Zero);
         }
-        if value & 0b1000_0000 != 0 {
+        if is_negative(value) {
             self.reg.enable_flag(Flag::Negative);
         }
     }
@@ -543,7 +550,7 @@ impl Cpu {
         if self.reg.x == 0 {
             self.reg.enable_flag(Flag::Zero);
         }
-        if self.reg.x & 0b1000_0000 != 0 {
+        if is_negative(self.reg.x) {
             self.reg.enable_flag(Flag::Negative);
         }
     }
@@ -553,7 +560,7 @@ impl Cpu {
         if self.reg.y == 0 {
             self.reg.enable_flag(Flag::Zero);
         }
-        if self.reg.y & 0b1000_0000 != 0 {
+        if is_negative(self.reg.y) {
             self.reg.enable_flag(Flag::Negative);
         }
     }
@@ -568,7 +575,7 @@ impl Cpu {
         if value == 0 {
             self.reg.enable_flag(Flag::Zero);
         }
-        if value & 0b1000_0000 != 0 {
+        if is_negative(value) {
             self.reg.enable_flag(Flag::Negative);
         }
     }
@@ -578,7 +585,7 @@ impl Cpu {
         if self.reg.x == 0 {
             self.reg.enable_flag(Flag::Zero);
         }
-        if self.reg.x & 0b1000_0000 != 0 {
+        if is_negative(self.reg.x) {
             self.reg.enable_flag(Flag::Negative);
         }
     }
@@ -588,7 +595,7 @@ impl Cpu {
         if self.reg.y == 0 {
             self.reg.enable_flag(Flag::Zero);
         }
-        if self.reg.y & 0b1000_0000 != 0 {
+        if is_negative(self.reg.y) {
             self.reg.enable_flag(Flag::Negative);
         }
     }
@@ -604,7 +611,7 @@ impl Cpu {
         if self.reg.a == 0 {
             self.reg.enable_flag(Flag::Zero);
         }
-        if self.reg.a & 0b1000_0000 != 0 {
+        if is_negative(self.reg.a) {
             self.reg.enable_flag(Flag::Negative);
         }
     }
@@ -616,7 +623,7 @@ impl Cpu {
         if self.reg.x == 0 {
             self.reg.enable_flag(Flag::Zero);
         }
-        if self.reg.x & 0b1000_0000 != 0 {
+        if is_negative(self.reg.x) {
             self.reg.enable_flag(Flag::Negative);
         }
     }
@@ -628,7 +635,7 @@ impl Cpu {
         if self.reg.y == 0 {
             self.reg.enable_flag(Flag::Zero);
         }
-        if self.reg.y & 0b1000_0000 != 0 {
+        if is_negative(self.reg.y) {
             self.reg.enable_flag(Flag::Negative);
         }
     }
@@ -680,7 +687,7 @@ impl Cpu {
         if self.reg.x == 0 {
             self.reg.enable_flag(Flag::Zero);
         }
-        if self.reg.x & 0b1000_0000 != 0 {
+        if is_negative(self.reg.x) {
             self.reg.enable_flag(Flag::Negative);
         }
     }
@@ -690,7 +697,7 @@ impl Cpu {
         if self.reg.y == 0 {
             self.reg.enable_flag(Flag::Zero);
         }
-        if self.reg.y & 0b1000_0000 != 0 {
+        if is_negative(self.reg.y) {
             self.reg.enable_flag(Flag::Negative);
         }
     }
@@ -700,7 +707,7 @@ impl Cpu {
         if self.reg.x == 0 {
             self.reg.enable_flag(Flag::Zero);
         }
-        if self.reg.x & 0b1000_0000 != 0 {
+        if is_negative(self.reg.x) {
             self.reg.enable_flag(Flag::Negative);
         }
     }
@@ -710,7 +717,7 @@ impl Cpu {
         if self.reg.a == 0 {
             self.reg.enable_flag(Flag::Zero);
         }
-        if self.reg.a & 0b1000_0000 != 0 {
+        if is_negative(self.reg.a) {
             self.reg.enable_flag(Flag::Negative);
         }
     }
@@ -724,7 +731,7 @@ impl Cpu {
         if self.reg.a == 0 {
             self.reg.enable_flag(Flag::Zero);
         }
-        if self.reg.a & 0b1000_0000 != 0 {
+        if is_negative(self.reg.a) {
             self.reg.enable_flag(Flag::Negative);
         }
     }
