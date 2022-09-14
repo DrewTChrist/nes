@@ -1,7 +1,4 @@
 #[cfg(test)]
-mod apu {}
-
-#[cfg(test)]
 mod cpu {
     use nes::cpu::Cpu;
 
@@ -1083,18 +1080,5 @@ mod cpu {
         }
         assert_eq!(cpu.reg.pc, 0x8012);
         assert_eq!(cpu.read_mem(0x05), 0xff - 0x06);
-    }
-}
-
-#[cfg(test)]
-mod ppu {
-    use embedded_graphics::mock_display::MockDisplay;
-    use embedded_graphics::pixelcolor::Rgb565;
-    use nes::ppu::Ppu;
-
-    #[test]
-    fn mock_display() {
-        let mock_display = MockDisplay::<Rgb565>::new();
-        let _ppu = Ppu::new(mock_display);
     }
 }
