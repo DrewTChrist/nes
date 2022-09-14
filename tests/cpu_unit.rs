@@ -966,16 +966,49 @@ mod cpu {
     #[test]
     fn _d5_pos() {
         // cmp zero page x
+        // A >= M
+        let program: [u8; 3] = [0xd5, 0xc8, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0xa;
+        cpu.reg.a = 0x32;
+        cpu.write_mem(0xd2, 0x19);
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
 
     #[test]
     fn _d5_eq() {
         // cmp zero page x
+        // A = M
+        let program: [u8; 3] = [0xd5, 0xc8, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0xa;
+        cpu.reg.a = 0x32;
+        cpu.write_mem(0xd2, 0x32);
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 != 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
 
     #[test]
     fn _d5_neg() {
         // cmp zero page x
+        // A < M
+        let program: [u8; 3] = [0xd5, 0xc8, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0xa;
+        cpu.reg.a = 0x19;
+        cpu.write_mem(0xd2, 0x32);
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 == 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 != 0);
     }
 
     #[test]
