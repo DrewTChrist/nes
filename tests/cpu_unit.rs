@@ -673,7 +673,6 @@ mod cpu {
         cpu.write_mem(0xc8, 0x02);
         cpu.write_mem(0xc9, 0x80);
         cpu.tick();
-        println!("{}", cpu.reg.p);
         assert!(cpu.reg.p & 0b0000_0001 != 0);
         assert!(cpu.reg.p & 0b0000_0010 == 0);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
@@ -682,7 +681,7 @@ mod cpu {
     #[test]
     fn _c1_eq() {
         // cmp indirect x
-        // A == M
+        // A = M
         let program: [u8; 4] = [0xc1, 0x64, 0x32, 0x00];
         let mut cpu = Cpu::new();
         cpu.load_program(program);
@@ -916,16 +915,52 @@ mod cpu {
     #[test]
     fn _d1_pos() {
         // cmp indirect y
+        // A >= M
+        let program: [u8; 4] = [0xd1, 0x64, 0x32, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x02;
+        cpu.reg.a = 0x64;
+        cpu.write_mem(0x64, 0x00);
+        cpu.write_mem(0x65, 0x80);
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
 
     #[test]
     fn _d1_eq() {
         // cmp indirect y
+        // A = M
+        let program: [u8; 4] = [0xd1, 0x64, 0x32, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x02;
+        cpu.reg.a = 0x32;
+        cpu.write_mem(0x64, 0x00);
+        cpu.write_mem(0x65, 0x80);
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 != 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
 
     #[test]
     fn _d1_neg() {
         // cmp indirect y
+        // A < M
+        let program: [u8; 4] = [0xd1, 0x64, 0x32, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x02;
+        cpu.reg.a = 0x19;
+        cpu.write_mem(0x64, 0x00);
+        cpu.write_mem(0x65, 0x80);
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 == 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 != 0);
     }
 
     #[test]
