@@ -786,16 +786,43 @@ mod cpu {
     #[test]
     fn _c9_pos() {
         // cmp immediate
+        // A >= M
+        let program: [u8; 3] = [0xc9, 0x19, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.a = 0x32;
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
 
     #[test]
     fn _c9_eq() {
         // cmp immediate
+        // A = M
+        let program: [u8; 3] = [0xc9, 0x32, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.a = 0x32;
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 != 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
 
     #[test]
     fn _c9_neg() {
         // cmp immediate
+        // A < M
+        let program: [u8; 3] = [0xc9, 0x32, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.a = 0x19;
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 == 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 != 0);
     }
 
     #[test]
