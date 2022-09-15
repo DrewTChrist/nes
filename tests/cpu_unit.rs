@@ -1039,31 +1039,91 @@ mod cpu {
     #[test]
     fn _d9_pos() {
         // cmp absolute y
+        // A >= M
+        let program: [u8; 5] = [0xd9, 0x01, 0x80, 0x19, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x02;
+        cpu.reg.a = 0x32;
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
 
     #[test]
     fn _d9_eq() {
         // cmp absolute y
+        // A = M
+        let program: [u8; 5] = [0xd9, 0x01, 0x80, 0x32, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x02;
+        cpu.reg.a = 0x32;
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 != 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
 
     #[test]
     fn _d9_neg() {
         // cmp absolute y
+        // A < M
+        let program: [u8; 5] = [0xd9, 0x01, 0x80, 0x32, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x02;
+        cpu.reg.a = 0x19;
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 == 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 != 0);
     }
 
     #[test]
     fn _dd_pos() {
         // cmp absolute x
+        // A >= M
+        let program: [u8; 5] = [0xdd, 0x01, 0x80, 0x19, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x02;
+        cpu.reg.a = 0x32;
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
 
     #[test]
     fn _dd_eq() {
         // cmp absolute x
+        // A = M
+        let program: [u8; 5] = [0xdd, 0x01, 0x80, 0x32, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x02;
+        cpu.reg.a = 0x32;
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 != 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
 
     #[test]
     fn _dd_neg() {
         // cmp absolute x
+        // A < M
+        let program: [u8; 5] = [0xdd, 0x01, 0x80, 0x32, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x02;
+        cpu.reg.a = 0x19;
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 == 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 != 0);
     }
 
     #[test]
