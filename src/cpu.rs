@@ -361,15 +361,15 @@ impl Cpu {
             0xdd => self.cmp(AddressMode::ABSOLUTE_X),
             0xde => self.dec(AddressMode::ABSOLUTE_X),
             0xd8 => self.cld(),
-            0xe0 => todo!(),
+            0xe0 => self.cpx(AddressMode::IMMEDIATE),
             0xe1 => todo!(),
-            0xe4 => todo!(),
+            0xe4 => self.cpx(AddressMode::ZERO_PAGE),
             0xe5 => todo!(),
             0xe6 => self.inc(AddressMode::ZERO_PAGE),
             0xe8 => self.inx(),
             0xe9 => todo!(),
             0xea => self.nop(),
-            0xec => todo!(),
+            0xec => self.cpx(AddressMode::ABSOLUTE),
             0xed => todo!(),
             0xee => self.inc(AddressMode::ABSOLUTE),
             0xf0 => self.beq(),
@@ -562,7 +562,20 @@ impl Cpu {
         }
     }
 
-    fn cpx(&mut self, address_mode: AddressMode) {}
+    fn cpx(&mut self, address_mode: AddressMode) {
+        let address = self.get_address(address_mode);
+        let value = self.read_mem(address);
+        self.reg.pc += address_mode.get_pc_increment();
+        if self.reg.x >= value {
+            self.reg.enable_flag(Flag::Carry);
+        }
+        if self.reg.x == value {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if is_negative(self.reg.x.wrapping_sub(value)) {
+            self.reg.enable_flag(Flag::Negative);
+        }
+    }
 
     fn cpy(&mut self, address_mode: AddressMode) {}
 
