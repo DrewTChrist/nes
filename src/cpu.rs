@@ -342,15 +342,15 @@ impl Cpu {
             0xbc => self.ldy(AddressMode::ABSOLUTE_X),
             0xbd => self.lda(AddressMode::ABSOLUTE_X),
             0xbe => self.ldx(AddressMode::ABSOLUTE_X),
-            0xc0 => todo!(),
+            0xc0 => self.cpy(AddressMode::IMMEDIATE),
             0xc1 => self.cmp(AddressMode::INDIRECT_X),
-            0xc4 => todo!(),
+            0xc4 => self.cpy(AddressMode::ZERO_PAGE),
             0xc5 => self.cmp(AddressMode::ZERO_PAGE),
             0xc6 => self.dec(AddressMode::ZERO_PAGE),
             0xc8 => self.iny(),
             0xc9 => self.cmp(AddressMode::IMMEDIATE),
             0xca => self.dex(),
-            0xcc => todo!(),
+            0xcc => self.cpy(AddressMode::ABSOLUTE),
             0xcd => self.cmp(AddressMode::ABSOLUTE),
             0xce => self.dec(AddressMode::ABSOLUTE),
             0xd0 => self.bne(),
@@ -577,7 +577,20 @@ impl Cpu {
         }
     }
 
-    fn cpy(&mut self, address_mode: AddressMode) {}
+    fn cpy(&mut self, address_mode: AddressMode) {
+        let address = self.get_address(address_mode);
+        let value = self.read_mem(address);
+        self.reg.pc += address_mode.get_pc_increment();
+        if self.reg.y >= value {
+            self.reg.enable_flag(Flag::Carry);
+        }
+        if self.reg.y == value {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if is_negative(self.reg.y.wrapping_sub(value)) {
+            self.reg.enable_flag(Flag::Negative);
+        }
+    }
 
     fn dec(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);

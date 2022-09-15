@@ -662,6 +662,48 @@ mod cpu {
     }
 
     #[test]
+    fn _c0_pos() {
+        // cpy immediate
+        // Y >= M
+        let program: [u8; 3] = [0xc0, 0x19, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x32;
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _c0_eq() {
+        // cpy immediate
+        // Y = M
+        let program: [u8; 3] = [0xc0, 0x32, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x32;
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 != 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _c0_neg() {
+        // cpy immediate
+        // Y < M
+        let program: [u8; 3] = [0xc0, 0x32, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x19;
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 == 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 != 0);
+    }
+
+    #[test]
     fn _c1_pos() {
         // cmp indirect x
         // A >= M
@@ -706,6 +748,51 @@ mod cpu {
         cpu.reg.a = 0x32;
         cpu.write_mem(0xc8, 0x02);
         cpu.write_mem(0xc9, 0x80);
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 == 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 != 0);
+    }
+
+    #[test]
+    fn _c4_pos() {
+        // cpy zero page
+        // Y >= M
+        let program: [u8; 3] = [0xc4, 0xc8, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x32;
+        cpu.write_mem(0xc8, 0x19);
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _c4_eq() {
+        // cpx zero page
+        // Y = M
+        let program: [u8; 3] = [0xc4, 0xc8, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x32;
+        cpu.write_mem(0xc8, 0x32);
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 != 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _c4_neg() {
+        // cpx zero page
+        // Y < M
+        let program: [u8; 3] = [0xc4, 0xc8, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x19;
+        cpu.write_mem(0xc8, 0x32);
         cpu.tick();
         assert!(cpu.reg.p & 0b0000_0001 == 0);
         assert!(cpu.reg.p & 0b0000_0010 == 0);
@@ -837,6 +924,48 @@ mod cpu {
         assert_eq!(cpu.reg.x, 3);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _cc_pos() {
+        // cpx absolute
+        // Y >= M
+        let program: [u8; 5] = [0xcc, 0x03, 0x80, 0x19, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x32;
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _cc_eq() {
+        // cpx absolute
+        // Y = M
+        let program: [u8; 5] = [0xcc, 0x03, 0x80, 0x32, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x32;
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 != 0);
+        assert!(cpu.reg.p & 0b0000_0010 != 0);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _cc_neg() {
+        // cpx absolute
+        // Y < M
+        let program: [u8; 5] = [0xcc, 0x03, 0x80, 0x32, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x19;
+        cpu.tick();
+        assert!(cpu.reg.p & 0b0000_0001 == 0);
+        assert!(cpu.reg.p & 0b0000_0010 == 0);
+        assert!(cpu.reg.p & 0b1000_0000 != 0);
     }
 
     #[test]
