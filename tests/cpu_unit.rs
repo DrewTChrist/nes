@@ -192,6 +192,62 @@ mod cpu {
     }
 
     #[test]
+    fn _41() {
+        // eor indirect x
+        let program: [u8; 4] = [0x41, 0x05, 0xb, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x05;
+        cpu.reg.a = 0xa;
+        cpu.write_mem(0xa, 0x02);
+        cpu.write_mem(0xb, 0x80);
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0x1);
+        assert!(cpu.reg.p & 0b0000_0010 == 0b00);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _45() {
+        // eor zero page
+        let program: [u8; 3] = [0x45, 0x05, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0x05, 0xb);
+        cpu.reg.a = 0xa;
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0x1);
+        assert!(cpu.reg.p & 0b0000_0010 == 0b00);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _49() {
+        // eor immediate
+        let program: [u8; 3] = [0x49, 0xb, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.a = 0xa;
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0x1);
+        assert!(cpu.reg.p & 0b0000_0010 == 0b00);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _4d() {
+        // eor absolute
+        let program: [u8; 5] = [0x4d, 0x03, 0x80, 0xb, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.a = 0xa;
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0x1);
+        assert!(cpu.reg.p & 0b0000_0010 == 0b00);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
     fn _50_pos() {
         // bvc with a positive relative offset
         let program: [u8; 3] = [0x10, 0x64, 0x00];
@@ -212,6 +268,37 @@ mod cpu {
     }
 
     #[test]
+    fn _51() {
+        // eor indirect y
+        let program: [u8; 4] = [0x51, 0xa, 0xb, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x02;
+        cpu.reg.a = 0xa;
+        cpu.write_mem(0xa, 0x00);
+        cpu.write_mem(0xb, 0x80);
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0x1);
+        assert!(cpu.reg.p & 0b0000_0010 == 0b00);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _55() {
+        // eor zero page x
+        let program: [u8; 3] = [0x55, 0x05, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0xa, 0xb);
+        cpu.reg.x = 0x05;
+        cpu.reg.a = 0xa;
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0x1);
+        assert!(cpu.reg.p & 0b0000_0010 == 0b00);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
     fn _58() {
         // cli
         let program: [u8; 1] = [0x58];
@@ -221,6 +308,34 @@ mod cpu {
         cpu.tick();
         assert_eq!(cpu.reg.pc, 0x8001);
         assert!(cpu.reg.p & 0b0000_0100 == 0b00);
+    }
+
+    #[test]
+    fn _59() {
+        // eor absolute y
+        let program: [u8; 5] = [0x59, 0x00, 0x80, 0xb, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x03;
+        cpu.reg.a = 0xa;
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0x1);
+        assert!(cpu.reg.p & 0b0000_0010 == 0b00);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _5d() {
+        // eor absolute x
+        let program: [u8; 5] = [0x5d, 0x00, 0x80, 0xb, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x03;
+        cpu.reg.a = 0xa;
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0x1);
+        assert!(cpu.reg.p & 0b0000_0010 == 0b00);
+        assert!(cpu.reg.p & 0b1000_0000 == 0);
     }
 
     #[test]

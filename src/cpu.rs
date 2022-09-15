@@ -266,23 +266,23 @@ impl Cpu {
             0x3d => self.and(AddressMode::ABSOLUTE_X),
             0x3e => todo!(),
             0x40 => todo!(),
-            0x41 => todo!(),
-            0x45 => todo!(),
+            0x41 => self.eor(AddressMode::INDIRECT_X),
+            0x45 => self.eor(AddressMode::ZERO_PAGE),
             0x46 => todo!(),
             0x48 => todo!(),
-            0x49 => todo!(),
+            0x49 => self.eor(AddressMode::IMMEDIATE),
             0x4a => todo!(),
             0x4c => todo!(),
-            0x4d => todo!(),
+            0x4d => self.eor(AddressMode::ABSOLUTE),
             0x4e => todo!(),
             0x50 => self.bvc(),
-            0x51 => todo!(),
-            0x55 => todo!(),
+            0x51 => self.eor(AddressMode::INDIRECT_Y),
+            0x55 => self.eor(AddressMode::ZERO_PAGE_X),
             0x56 => todo!(),
             0x58 => self.cli(),
-            0x59 => todo!(),
+            0x59 => self.eor(AddressMode::ABSOLUTE_Y),
             0x5a => todo!(),
-            0x5d => todo!(),
+            0x5d => self.eor(AddressMode::ABSOLUTE_X),
             0x5e => todo!(),
             0x60 => todo!(),
             0x61 => todo!(),
@@ -625,7 +625,17 @@ impl Cpu {
         }
     }
 
-    fn eor(&mut self, address_mode: AddressMode) {}
+    fn eor(&mut self, address_mode: AddressMode) {
+        let address = self.get_address(address_mode);
+        let value = self.read_mem(address);
+        self.reg.a ^= value;
+        if self.reg.a == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if is_negative(self.reg.a) {
+            self.reg.enable_flag(Flag::Negative);
+        }
+    }
 
     fn inc(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
