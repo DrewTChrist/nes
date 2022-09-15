@@ -301,24 +301,24 @@ impl Cpu {
             0x79 => todo!(),
             0x7d => todo!(),
             0x7e => todo!(),
-            0x81 => todo!(),
-            0x84 => todo!(),
-            0x85 => todo!(),
-            0x86 => todo!(),
+            0x81 => self.sta(AddressMode::INDIRECT_X),
+            0x84 => self.sty(AddressMode::ZERO_PAGE),
+            0x85 => self.sta(AddressMode::ZERO_PAGE),
+            0x86 => self.stx(AddressMode::ZERO_PAGE),
             0x88 => self.dey(),
             0x8a => self.txa(),
-            0x8c => todo!(),
-            0x8d => todo!(),
-            0x8e => todo!(),
+            0x8c => self.sty(AddressMode::ABSOLUTE),
+            0x8d => self.sta(AddressMode::ABSOLUTE),
+            0x8e => self.stx(AddressMode::ABSOLUTE),
             0x90 => self.bcc(),
-            0x91 => todo!(),
-            0x94 => todo!(),
-            0x95 => todo!(),
-            0x96 => todo!(),
+            0x91 => self.sta(AddressMode::INDIRECT_X),
+            0x94 => self.sty(AddressMode::ZERO_PAGE_X),
+            0x95 => self.sta(AddressMode::ZERO_PAGE_X),
+            0x96 => self.stx(AddressMode::ZERO_PAGE_Y),
             0x98 => self.tya(),
-            0x99 => todo!(),
+            0x99 => self.sta(AddressMode::ABSOLUTE_Y),
             0x9a => self.txs(),
-            0x9d => todo!(),
+            0x9d => self.sta(AddressMode::ABSOLUTE_X),
             0xa0 => self.ldy(AddressMode::IMMEDIATE),
             0xa1 => self.lda(AddressMode::INDIRECT_X),
             0xa2 => self.ldx(AddressMode::IMMEDIATE),
@@ -746,11 +746,23 @@ impl Cpu {
         self.reg.enable_flag(Flag::InterruptDisable);
     }
 
-    fn sta(&mut self, address_mode: AddressMode) {}
+    fn sta(&mut self, address_mode: AddressMode) {
+        let address = self.get_address(address_mode);
+        self.reg.pc += address_mode.get_pc_increment();
+        self.write_mem(address, self.reg.a);
+    }
 
-    fn stx(&mut self, address_mode: AddressMode) {}
+    fn stx(&mut self, address_mode: AddressMode) {
+        let address = self.get_address(address_mode);
+        self.reg.pc += address_mode.get_pc_increment();
+        self.write_mem(address, self.reg.x);
+    }
 
-    fn sty(&mut self, address_mode: AddressMode) {}
+    fn sty(&mut self, address_mode: AddressMode) {
+        let address = self.get_address(address_mode);
+        self.reg.pc += address_mode.get_pc_increment();
+        self.write_mem(address, self.reg.y);
+    }
 
     fn tax(&mut self) {
         self.reg.x = self.reg.a;

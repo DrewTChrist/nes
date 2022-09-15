@@ -373,6 +373,53 @@ mod cpu {
     }
 
     #[test]
+    fn _81() {
+        // sta indirect x
+        let program: [u8; 3] = [0x81, 0x05, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x05;
+        cpu.reg.a = 0x32;
+        cpu.write_mem(0xa, 0x02);
+        cpu.write_mem(0xb, 0x80);
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x8002), 0x32);
+    }
+
+    #[test]
+    fn _84() {
+        // sty zero page
+        let program: [u8; 3] = [0x84, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x32;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x64), 0x32);
+    }
+
+    #[test]
+    fn _85() {
+        // sta zero page
+        let program: [u8; 3] = [0x85, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.a = 0x32;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x64), 0x32);
+    }
+
+    #[test]
+    fn _86() {
+        // stx zero page
+        let program: [u8; 3] = [0x86, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x32;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x64), 0x32);
+    }
+
+    #[test]
     fn _88() {
         // dey
         let program: [u8; 3] = [0x88, 0x88, 0x00];
@@ -402,6 +449,39 @@ mod cpu {
     }
 
     #[test]
+    fn _8c() {
+        // sty absolute
+        let program: [u8; 4] = [0x8c, 0x03, 0x80, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x32;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x8003), 0x32);
+    }
+
+    #[test]
+    fn _8d() {
+        // sta absolute
+        let program: [u8; 4] = [0x8d, 0x03, 0x80, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.a = 0x32;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x8003), 0x32);
+    }
+
+    #[test]
+    fn _8e() {
+        // stx absolute
+        let program: [u8; 4] = [0x8e, 0x03, 0x80, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x32;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x8003), 0x32);
+    }
+
+    #[test]
     fn _90_pos() {
         // bcc with a positive relative offset
         let program: [u8; 3] = [0x90, 0x64, 0x00];
@@ -422,6 +502,56 @@ mod cpu {
     }
 
     #[test]
+    fn _91() {
+        // sta indirect y
+        let program: [u8; 3] = [0x91, 0xa, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x01;
+        cpu.reg.a = 0x32;
+        cpu.write_mem(0xa, 0x01);
+        cpu.write_mem(0xb, 0x80);
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x8001), 0x32);
+    }
+
+    #[test]
+    fn _94() {
+        // sty zero page x
+        let program: [u8; 3] = [0x94, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x2;
+        cpu.reg.y = 0x32;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x66), 0x32);
+    }
+
+    #[test]
+    fn _95() {
+        // sta zero page x
+        let program: [u8; 3] = [0x95, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x2;
+        cpu.reg.a = 0x32;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x66), 0x32);
+    }
+
+    #[test]
+    fn _96() {
+        // stx zero page y
+        let program: [u8; 3] = [0x96, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x2;
+        cpu.reg.x = 0x32;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x66), 0x32);
+    }
+
+    #[test]
     fn _98() {
         // tya
         let program: [u8; 2] = [0x98, 0x00];
@@ -436,6 +566,18 @@ mod cpu {
     }
 
     #[test]
+    fn _99() {
+        // sta absolute y
+        let program: [u8; 4] = [0x99, 0x03, 0x80, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x1;
+        cpu.reg.a = 0x32;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x8004), 0x32);
+    }
+
+    #[test]
     fn _9a() {
         // txs
         let program: [u8; 2] = [0x9a, 0x00];
@@ -445,6 +587,18 @@ mod cpu {
         cpu.tick();
         assert_eq!(cpu.reg.s, 0x10);
         assert_eq!(cpu.reg.pc, 0x8001);
+    }
+
+    #[test]
+    fn _9d() {
+        // sta absolute x
+        let program: [u8; 4] = [0x9d, 0x03, 0x80, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x1;
+        cpu.reg.a = 0x32;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x8004), 0x32);
     }
 
     #[test]
