@@ -81,13 +81,19 @@ impl Cpu {
         self.reg.s = self.reg.s.wrapping_sub(1);
     }
 
+    pub fn push_stack_u16(&mut self, value: u16) {
+        self.write_mem_u16(self.reg.s as u16, value);
+        self.reg.s = self.reg.s.wrapping_sub(2);
+    }
+
     pub fn pop_stack(&mut self) -> u8 {
         self.reg.s = self.reg.s.wrapping_add(1);
         self.read_mem(self.reg.s as u16)
     }
 
-    pub fn peek_stack(&mut self, address: u8) -> Option<u8> {
-        todo!()
+    pub fn pop_stack_u16(&mut self, value: u16) -> u16 {
+        self.reg.s = self.reg.s.wrapping_add(2);
+        self.read_mem_u16(self.reg.s as u16)
     }
 
     /// Returns the value of a location in memory
