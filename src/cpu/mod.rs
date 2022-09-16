@@ -327,37 +327,37 @@ impl Cpu {
     fn bcc(&mut self) {
         if self.reg.p & 0b0000_0001 == 0 {
             let offset = self.read_mem(self.reg.pc);
-            self.reg.pc += 1;
             if is_negative(offset) {
                 self.reg.pc -= twos_complement(offset) as u16;
             } else {
                 self.reg.pc += offset as u16;
             }
         }
+        self.reg.pc += 1;
     }
 
     fn bcs(&mut self) {
         if self.reg.p & 0b0000_0001 != 0 {
             let offset = self.read_mem(self.reg.pc);
-            self.reg.pc += 1;
             if is_negative(offset) {
                 self.reg.pc -= twos_complement(offset) as u16;
             } else {
                 self.reg.pc += offset as u16;
             }
         }
+        self.reg.pc += 1;
     }
 
     fn beq(&mut self) {
         if self.reg.p & 0b0000_0010 != 0 {
             let offset = self.read_mem(self.reg.pc);
-            self.reg.pc += 1;
             if is_negative(offset) {
                 self.reg.pc -= twos_complement(offset) as u16;
             } else {
                 self.reg.pc += offset as u16;
             }
         }
+        self.reg.pc += 1;
     }
 
     fn bit(&mut self, address_mode: AddressMode) {}
@@ -365,37 +365,37 @@ impl Cpu {
     fn bmi(&mut self) {
         if self.reg.p & 0b1000_0000 != 0 {
             let offset = self.read_mem(self.reg.pc);
-            self.reg.pc += 1;
             if is_negative(offset) {
                 self.reg.pc -= twos_complement(offset) as u16;
             } else {
                 self.reg.pc += offset as u16;
             }
         }
+        self.reg.pc += 1;
     }
 
     fn bne(&mut self) {
         if self.reg.p & 0b0000_0010 == 0 {
             let offset = self.read_mem(self.reg.pc);
-            self.reg.pc += 1;
             if is_negative(offset) {
                 self.reg.pc -= twos_complement(offset) as u16;
             } else {
                 self.reg.pc += offset as u16;
             }
         }
+        self.reg.pc += 1;
     }
 
     fn bpl(&mut self) {
         if self.reg.p & 0b1000_0000 == 0 {
             let offset = self.read_mem(self.reg.pc);
-            self.reg.pc += 1;
             if is_negative(offset) {
                 self.reg.pc -= twos_complement(offset) as u16;
             } else {
                 self.reg.pc += offset as u16;
             }
         }
+        self.reg.pc += 1;
     }
 
     fn brk(&mut self) {}
@@ -403,25 +403,25 @@ impl Cpu {
     fn bvc(&mut self) {
         if self.reg.p & 0b0100_0000 == 0 {
             let offset = self.read_mem(self.reg.pc);
-            self.reg.pc += 1;
             if is_negative(offset) {
                 self.reg.pc -= twos_complement(offset) as u16;
             } else {
                 self.reg.pc += offset as u16;
             }
         }
+        self.reg.pc += 1;
     }
 
     fn bvs(&mut self) {
         if self.reg.p & 0b0100_0000 != 0 {
             let offset = self.read_mem(self.reg.pc);
-            self.reg.pc += 1;
             if is_negative(offset) {
                 self.reg.pc -= twos_complement(offset) as u16;
             } else {
                 self.reg.pc += offset as u16;
             }
         }
+        self.reg.pc += 1;
     }
 
     fn clc(&mut self) {
