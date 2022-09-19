@@ -489,7 +489,25 @@ mod cpu {
         cpu.write_mem(0x8050, 0x60);
         cpu.tick();
         cpu.tick();
-        assert_eq!(cpu.reg.pc, 0x8000);
+        assert_eq!(cpu.reg.pc, 0x8003);
+    }
+
+    #[test]
+    fn _60_nested() {
+        // rts with two nested "subroutines"
+        let program: [u8; 4] = [0x20, 0x50, 0x80, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0x8050, 0x20);
+        cpu.write_mem(0x8051, 0x50);
+        cpu.write_mem(0x8052, 0x90);
+        cpu.write_mem(0x8053, 0x60);
+        cpu.write_mem(0x9050, 0x60);
+        cpu.tick();
+        cpu.tick();
+        cpu.tick();
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x8003);
     }
 
     #[test]

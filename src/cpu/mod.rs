@@ -580,6 +580,7 @@ impl Cpu {
 
     fn jsr(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
+        self.reg.pc += address_mode.get_pc_increment();
         self.push_stack_u16(self.reg.pc - 1);
         self.reg.pc = address;
     }
@@ -660,7 +661,7 @@ impl Cpu {
     fn rti(&mut self) {}
 
     fn rts(&mut self) {
-        self.reg.pc = self.pop_stack_u16();
+        self.reg.pc = self.pop_stack_u16() + 1;
     }
 
     fn sbc(&mut self, address_mode: AddressMode) {}
