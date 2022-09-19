@@ -3,6 +3,54 @@ mod cpu {
     use nes::cpu::Cpu;
 
     #[test]
+    fn _01() {
+        // ora indirect x
+        let program: [u8; 4] = [0x01, 0x64, 0x01, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0x6e, 0x02);
+        cpu.write_mem(0x6f, 0x80);
+        cpu.reg.x = 0xa;
+        cpu.reg.a = 0xa;
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0xb);
+    }
+
+    #[test]
+    fn _05() {
+        // ora zero page
+        let program: [u8; 3] = [0x05, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0x64, 0x1);
+        cpu.reg.a = 0xa;
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0xb);
+    }
+
+    #[test]
+    fn _09() {
+        // ora immediate
+        let program: [u8; 3] = [0x09, 0x1, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.a = 0xa;
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0xb);
+    }
+
+    #[test]
+    fn _0d() {
+        // ora absolute
+        let program: [u8; 5] = [0x0d, 0x03, 0x80, 0x01, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.a = 0xa;
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0xb);
+    }
+
+    #[test]
     fn _10_pos() {
         // bpl with a positive relative offset
         let program: [u8; 3] = [0x10, 0x64, 0x00];
@@ -23,6 +71,33 @@ mod cpu {
     }
 
     #[test]
+    fn _11() {
+        // ora indirect y
+        let program: [u8; 4] = [0x11, 0x64, 0x01, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0x64, 0x00);
+        cpu.write_mem(0x65, 0x80);
+        cpu.reg.y = 0x2;
+        cpu.reg.a = 0xa;
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0xb);
+    }
+
+    #[test]
+    fn _15() {
+        // ora zero page x
+        let program: [u8; 3] = [0x15, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0x6e, 0x1);
+        cpu.reg.x = 0xa;
+        cpu.reg.a = 0xa;
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0xb);
+    }
+
+    #[test]
     fn _18() {
         // clc
         let program: [u8; 1] = [0x18];
@@ -32,6 +107,30 @@ mod cpu {
         cpu.tick();
         assert_eq!(cpu.reg.pc, 0x8001);
         assert!(cpu.reg.p & 0b0000_0001 == 0b00);
+    }
+
+    #[test]
+    fn _19() {
+        // ora absolute y
+        let program: [u8; 5] = [0x19, 0x00, 0x80, 0x01, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.y = 0x03;
+        cpu.reg.a = 0xa;
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0xb);
+    }
+
+    #[test]
+    fn _1d() {
+        // ora absolute x
+        let program: [u8; 5] = [0x1d, 0x00, 0x80, 0x01, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x03;
+        cpu.reg.a = 0xa;
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0xb);
     }
 
     #[test]

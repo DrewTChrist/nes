@@ -129,21 +129,21 @@ impl Cpu {
     fn execute(&mut self, opcode: u8) {
         match opcode {
             0x00 => todo!(),
-            0x01 => todo!(),
-            0x05 => todo!(),
+            0x01 => self.ora(AddressMode::INDIRECT_X),
+            0x05 => self.ora(AddressMode::ZERO_PAGE),
             0x06 => todo!(),
             0x08 => todo!(),
-            0x09 => todo!(),
+            0x09 => self.ora(AddressMode::IMMEDIATE),
             0x0a => todo!(),
-            0x0d => todo!(),
+            0x0d => self.ora(AddressMode::ABSOLUTE),
             0x0e => todo!(),
             0x10 => self.bpl(),
-            0x11 => todo!(),
-            0x15 => todo!(),
+            0x11 => self.ora(AddressMode::INDIRECT_Y),
+            0x15 => self.ora(AddressMode::ZERO_PAGE_X),
             0x16 => todo!(),
             0x18 => self.clc(),
-            0x19 => todo!(),
-            0x1d => todo!(),
+            0x19 => self.ora(AddressMode::ABSOLUTE_Y),
+            0x1d => self.ora(AddressMode::ABSOLUTE_X),
             0x1e => todo!(),
             0x20 => todo!(),
             0x21 => self.and(AddressMode::INDIRECT_X),
@@ -527,6 +527,7 @@ impl Cpu {
     fn eor(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
         let value = self.read_mem(address);
+        self.reg.pc += address_mode.get_pc_increment();
         self.reg.a ^= value;
         if self.reg.a == 0 {
             self.reg.enable_flag(Flag::Zero);
@@ -613,7 +614,18 @@ impl Cpu {
 
     fn nop(&self) {}
 
-    fn ora(&mut self, address_mode: AddressMode) {}
+    fn ora(&mut self, address_mode: AddressMode) {
+        let address = self.get_address(address_mode);
+        let value = self.read_mem(address);
+        self.reg.pc += address_mode.get_pc_increment();
+        self.reg.a |= value;
+        if self.reg.a == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        if is_negative(self.reg.a) {
+            self.reg.enable_flag(Flag::Negative);
+        }
+    }
 
     fn pha(&mut self) {}
 
