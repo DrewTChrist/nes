@@ -29,6 +29,17 @@ mod cpu {
     }
 
     #[test]
+    fn _08() {
+        // php
+        let program: [u8; 2] = [0x08, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.p = 0xa;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x01ff), 0xa);
+    }
+
+    #[test]
     fn _09() {
         // ora immediate
         let program: [u8; 3] = [0x09, 0x1, 0x00];
@@ -163,6 +174,17 @@ mod cpu {
         assert_eq!(cpu.reg.a, 0x08);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _28() {
+        // pla
+        let program: [u8; 2] = [0x28, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.push_stack(0xa);
+        cpu.tick();
+        assert_eq!(cpu.reg.p, 0xa);
     }
 
     #[test]
@@ -321,6 +343,17 @@ mod cpu {
     }
 
     #[test]
+    fn _48() {
+        // pha
+        let program: [u8; 2] = [0x48, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.a = 0xa;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x01ff), 0xa);
+    }
+
+    #[test]
     fn _49() {
         // eor immediate
         let program: [u8; 3] = [0x49, 0xb, 0x00];
@@ -435,6 +468,17 @@ mod cpu {
         assert_eq!(cpu.reg.a, 0x1);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _68() {
+        // pla
+        let program: [u8; 2] = [0x68, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.push_stack(0xa);
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0xa);
     }
 
     #[test]

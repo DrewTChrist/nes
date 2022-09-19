@@ -34,6 +34,7 @@ impl Default for Cpu {
 }
 
 impl Cpu {
+    /// Creates a new cpu struct
     pub fn new() -> Self {
         Self {
             reg: Registers::new(),
@@ -51,8 +52,9 @@ impl Cpu {
         self.reg
     }
 
+    /// Returns the cpu stack as a slice
     pub fn get_stack(&self) -> &[u8] {
-        self.get_mem_slice(STACK_END, STACK_BEG)
+        self.get_mem_slice(STACK_END, STACK_BEG + 1)
     }
 
     /// Loads a program into the program rom space in cpu memory
@@ -76,24 +78,28 @@ impl Cpu {
         self.execute(opcode);
     }
 
+    /// Pushes a byte onto the cpu stack
     pub fn push_stack(&mut self, value: u8) {
-        self.write_mem(self.reg.s as u16, value);
+        self.write_mem(STACK_END as u16 | self.reg.s as u16, value);
         self.reg.s = self.reg.s.wrapping_sub(1);
     }
 
+    /// Pushes 16 bit value onto the cpu stack
     pub fn push_stack_u16(&mut self, value: u16) {
-        self.write_mem_u16(self.reg.s as u16, value);
+        self.write_mem_u16(STACK_END as u16 | self.reg.s as u16, value);
         self.reg.s = self.reg.s.wrapping_sub(2);
     }
 
+    /// Pops a byte from the cpu stack
     pub fn pop_stack(&mut self) -> u8 {
         self.reg.s = self.reg.s.wrapping_add(1);
-        self.read_mem(self.reg.s as u16)
+        self.read_mem(STACK_END as u16 | self.reg.s as u16)
     }
 
+    /// Pops a 16 bit value from the cpu stack
     pub fn pop_stack_u16(&mut self, value: u16) -> u16 {
         self.reg.s = self.reg.s.wrapping_add(2);
-        self.read_mem_u16(self.reg.s as u16)
+        self.read_mem_u16(STACK_END as u16 | self.reg.s as u16)
     }
 
     /// Returns the value of a location in memory
@@ -132,7 +138,7 @@ impl Cpu {
             0x01 => self.ora(AddressMode::INDIRECT_X),
             0x05 => self.ora(AddressMode::ZERO_PAGE),
             0x06 => todo!(),
-            0x08 => todo!(),
+            0x08 => self.php(),
             0x09 => self.ora(AddressMode::IMMEDIATE),
             0x0a => todo!(),
             0x0d => self.ora(AddressMode::ABSOLUTE),
@@ -150,7 +156,7 @@ impl Cpu {
             0x24 => todo!(),
             0x25 => self.and(AddressMode::ZERO_PAGE_X),
             0x26 => todo!(),
-            0x28 => todo!(),
+            0x28 => self.plp(),
             0x29 => self.and(AddressMode::IMMEDIATE),
             0x2a => todo!(),
             0x2c => todo!(),
@@ -168,7 +174,7 @@ impl Cpu {
             0x41 => self.eor(AddressMode::INDIRECT_X),
             0x45 => self.eor(AddressMode::ZERO_PAGE),
             0x46 => todo!(),
-            0x48 => todo!(),
+            0x48 => self.pha(),
             0x49 => self.eor(AddressMode::IMMEDIATE),
             0x4a => todo!(),
             0x4c => todo!(),
@@ -187,7 +193,7 @@ impl Cpu {
             0x61 => todo!(),
             0x65 => todo!(),
             0x66 => todo!(),
-            0x68 => todo!(),
+            0x68 => self.pla(),
             0x69 => todo!(),
             0x6a => todo!(),
             0x6c => todo!(),
@@ -627,13 +633,21 @@ impl Cpu {
         }
     }
 
-    fn pha(&mut self) {}
+    fn pha(&mut self) {
+        self.push_stack(self.reg.a);
+    }
 
-    fn php(&mut self) {}
+    fn php(&mut self) {
+        self.push_stack(self.reg.p);
+    }
 
-    fn pla(&mut self) {}
+    fn pla(&mut self) {
+        self.reg.a = self.pop_stack();
+    }
 
-    fn plp(&mut self) {}
+    fn plp(&mut self) {
+        self.reg.p = self.pop_stack();
+    }
 
     fn rol(&mut self, address_mode: AddressMode) {}
 

@@ -25,7 +25,7 @@ impl Registers {
             x: 0,
             y: 0,
             pc: PROGRAM_ROM as u16,
-            s: STACK_BEG as u8,
+            s: 0xff,
             p: 0,
         }
     }
