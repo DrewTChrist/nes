@@ -145,6 +145,16 @@ mod cpu {
     }
 
     #[test]
+    fn _20() {
+        // jsr
+        let program: [u8; 4] = [0x20, 0x50, 0x80, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x8050);
+    }
+
+    #[test]
     fn _21() {
         // and indirect x
         let program: [u8; 4] = [0x21, 0x05, 0x08, 0x00];
@@ -468,6 +478,18 @@ mod cpu {
         assert_eq!(cpu.reg.a, 0x1);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _60() {
+        // rts
+        let program: [u8; 4] = [0x20, 0x50, 0x80, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0x8050, 0x60);
+        cpu.tick();
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x8000);
     }
 
     #[test]

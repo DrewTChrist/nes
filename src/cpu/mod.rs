@@ -97,7 +97,7 @@ impl Cpu {
     }
 
     /// Pops a 16 bit value from the cpu stack
-    pub fn pop_stack_u16(&mut self, value: u16) -> u16 {
+    pub fn pop_stack_u16(&mut self) -> u16 {
         self.reg.s = self.reg.s.wrapping_add(2);
         self.read_mem_u16(STACK_END as u16 | self.reg.s as u16)
     }
@@ -151,7 +151,7 @@ impl Cpu {
             0x19 => self.ora(AddressMode::ABSOLUTE_Y),
             0x1d => self.ora(AddressMode::ABSOLUTE_X),
             0x1e => todo!(),
-            0x20 => todo!(),
+            0x20 => self.jsr(AddressMode::ABSOLUTE),
             0x21 => self.and(AddressMode::INDIRECT_X),
             0x24 => todo!(),
             0x25 => self.and(AddressMode::ZERO_PAGE_X),
@@ -189,7 +189,7 @@ impl Cpu {
             0x5a => todo!(),
             0x5d => self.eor(AddressMode::ABSOLUTE_X),
             0x5e => todo!(),
-            0x60 => todo!(),
+            0x60 => self.rts(),
             0x61 => todo!(),
             0x65 => todo!(),
             0x66 => todo!(),
@@ -578,7 +578,11 @@ impl Cpu {
 
     fn jmp(&mut self, address_mode: AddressMode) {}
 
-    fn jsr(&mut self, address_mode: AddressMode) {}
+    fn jsr(&mut self, address_mode: AddressMode) {
+        let address = self.get_address(address_mode);
+        self.push_stack_u16(self.reg.pc - 1);
+        self.reg.pc = address;
+    }
 
     fn lda(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
@@ -655,7 +659,9 @@ impl Cpu {
 
     fn rti(&mut self) {}
 
-    fn rts(&mut self) {}
+    fn rts(&mut self) {
+        self.reg.pc = self.pop_stack_u16();
+    }
 
     fn sbc(&mut self, address_mode: AddressMode) {}
 
