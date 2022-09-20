@@ -134,78 +134,78 @@ impl Cpu {
     /// Executes a program instruction
     fn execute(&mut self, opcode: u8) {
         match opcode {
-            0x00 => todo!(),
+            0x00 => self.brk(),
             0x01 => self.ora(AddressMode::INDIRECT_X),
             0x05 => self.ora(AddressMode::ZERO_PAGE),
-            0x06 => todo!(),
+            0x06 => self.asl(AddressMode::ZERO_PAGE),
             0x08 => self.php(),
             0x09 => self.ora(AddressMode::IMMEDIATE),
-            0x0a => todo!(),
+            0x0a => self.asl(AddressMode::ACCUMULATOR),
             0x0d => self.ora(AddressMode::ABSOLUTE),
-            0x0e => todo!(),
+            0x0e => self.asl(AddressMode::ABSOLUTE),
             0x10 => self.bpl(),
             0x11 => self.ora(AddressMode::INDIRECT_Y),
             0x15 => self.ora(AddressMode::ZERO_PAGE_X),
-            0x16 => todo!(),
+            0x16 => self.asl(AddressMode::ZERO_PAGE_X),
             0x18 => self.clc(),
             0x19 => self.ora(AddressMode::ABSOLUTE_Y),
             0x1d => self.ora(AddressMode::ABSOLUTE_X),
-            0x1e => todo!(),
+            0x1e => self.asl(AddressMode::ABSOLUTE_X),
             0x20 => self.jsr(AddressMode::ABSOLUTE),
             0x21 => self.and(AddressMode::INDIRECT_X),
-            0x24 => todo!(),
+            0x24 => self.bit(AddressMode::ZERO_PAGE),
             0x25 => self.and(AddressMode::ZERO_PAGE_X),
-            0x26 => todo!(),
+            0x26 => self.rol(AddressMode::ZERO_PAGE),
             0x28 => self.plp(),
             0x29 => self.and(AddressMode::IMMEDIATE),
-            0x2a => todo!(),
-            0x2c => todo!(),
-            0x2e => todo!(),
+            0x2a => self.rol(AddressMode::ACCUMULATOR),
+            0x2c => self.bit(AddressMode::ABSOLUTE),
+            0x2e => self.rol(AddressMode::ABSOLUTE),
             0x2d => self.and(AddressMode::ABSOLUTE),
             0x30 => self.bmi(),
             0x31 => self.and(AddressMode::INDIRECT_Y),
             0x35 => self.and(AddressMode::ZERO_PAGE_X),
-            0x36 => todo!(),
+            0x36 => self.rol(AddressMode::ZERO_PAGE_X),
             0x38 => self.sec(),
             0x39 => self.and(AddressMode::ABSOLUTE_Y),
             0x3d => self.and(AddressMode::ABSOLUTE_X),
-            0x3e => todo!(),
-            0x40 => todo!(),
+            0x3e => self.rol(AddressMode::ABSOLUTE_X),
+            0x40 => self.rti(),
             0x41 => self.eor(AddressMode::INDIRECT_X),
             0x45 => self.eor(AddressMode::ZERO_PAGE),
-            0x46 => todo!(),
+            0x46 => self.lsr(AddressMode::ZERO_PAGE),
             0x48 => self.pha(),
             0x49 => self.eor(AddressMode::IMMEDIATE),
-            0x4a => todo!(),
-            0x4c => todo!(),
+            0x4a => self.lsr(AddressMode::ACCUMULATOR),
+            0x4c => self.jmp(AddressMode::ABSOLUTE),
             0x4d => self.eor(AddressMode::ABSOLUTE),
-            0x4e => todo!(),
+            0x4e => self.lsr(AddressMode::ABSOLUTE),
             0x50 => self.bvc(),
             0x51 => self.eor(AddressMode::INDIRECT_Y),
             0x55 => self.eor(AddressMode::ZERO_PAGE_X),
-            0x56 => todo!(),
+            0x56 => self.lsr(AddressMode::ZERO_PAGE_X),
             0x58 => self.cli(),
             0x59 => self.eor(AddressMode::ABSOLUTE_Y),
-            0x5a => todo!(),
             0x5d => self.eor(AddressMode::ABSOLUTE_X),
-            0x5e => todo!(),
+            0x5e => self.lsr(AddressMode::ABSOLUTE_X),
             0x60 => self.rts(),
-            0x61 => todo!(),
-            0x65 => todo!(),
-            0x66 => todo!(),
+            0x61 => self.adc(AddressMode::INDIRECT_X),
+            0x65 => self.adc(AddressMode::ZERO_PAGE),
+            0x66 => self.ror(AddressMode::ZERO_PAGE),
             0x68 => self.pla(),
-            0x69 => todo!(),
-            0x6a => todo!(),
-            0x6c => todo!(),
-            0x6d => todo!(),
-            0x6e => todo!(),
+            0x69 => self.adc(AddressMode::IMMEDIATE),
+            0x6a => self.ror(AddressMode::ACCUMULATOR),
+            0x6c => self.jmp(AddressMode::INDIRECT),
+            0x6d => self.adc(AddressMode::ABSOLUTE),
+            0x6e => self.ror(AddressMode::ABSOLUTE),
             0x70 => self.bvs(),
-            0x71 => todo!(),
-            0x75 => todo!(),
+            0x71 => self.adc(AddressMode::INDIRECT_Y),
+            0x75 => self.adc(AddressMode::ZERO_PAGE_X),
+            0x76 => self.ror(AddressMode::ZERO_PAGE_X),
             0x78 => self.sei(),
-            0x79 => todo!(),
-            0x7d => todo!(),
-            0x7e => todo!(),
+            0x79 => self.adc(AddressMode::ABSOLUTE_Y),
+            0x7d => self.adc(AddressMode::ABSOLUTE_X),
+            0x7e => self.ror(AddressMode::ABSOLUTE_X),
             0x81 => self.sta(AddressMode::INDIRECT_X),
             0x84 => self.sty(AddressMode::ZERO_PAGE),
             0x85 => self.sta(AddressMode::ZERO_PAGE),
@@ -267,23 +267,23 @@ impl Cpu {
             0xde => self.dec(AddressMode::ABSOLUTE_X),
             0xd8 => self.cld(),
             0xe0 => self.cpx(AddressMode::IMMEDIATE),
-            0xe1 => todo!(),
+            0xe1 => self.sbc(AddressMode::INDIRECT_X),
             0xe4 => self.cpx(AddressMode::ZERO_PAGE),
-            0xe5 => todo!(),
+            0xe5 => self.sbc(AddressMode::ZERO_PAGE),
             0xe6 => self.inc(AddressMode::ZERO_PAGE),
             0xe8 => self.inx(),
-            0xe9 => todo!(),
+            0xe9 => self.sbc(AddressMode::IMMEDIATE),
             0xea => self.nop(),
             0xec => self.cpx(AddressMode::ABSOLUTE),
-            0xed => todo!(),
+            0xed => self.sbc(AddressMode::ABSOLUTE),
             0xee => self.inc(AddressMode::ABSOLUTE),
             0xf0 => self.beq(),
-            0xf1 => todo!(),
-            0xf5 => todo!(),
+            0xf1 => self.sbc(AddressMode::INDIRECT_Y),
+            0xf5 => self.sbc(AddressMode::ZERO_PAGE_X),
             0xf6 => self.inc(AddressMode::ZERO_PAGE_X),
             0xf8 => self.sed(),
-            0xf9 => todo!(),
-            0xfd => todo!(),
+            0xf9 => self.sbc(AddressMode::ABSOLUTE_X),
+            0xfd => self.sbc(AddressMode::ABSOLUTE_Y),
             0xfe => self.inc(AddressMode::ABSOLUTE_X),
             _ => {}
         }
@@ -303,6 +303,15 @@ impl Cpu {
             AddressMode::AbsoluteY(_) => self
                 .read_mem_u16(self.reg.pc)
                 .wrapping_add(self.reg.y as u16),
+            AddressMode::Indirect(_) => {
+                if self.reg.pc & 0xff == 0xff {
+                    let lo = self.read_mem(self.reg.pc);
+                    let hi = self.read_mem(self.reg.pc & 0xff00);
+                    (hi as u16) << 8 | (lo as u16)
+                } else {
+                    self.get_address(AddressMode::ABSOLUTE)
+                }
+            }
             AddressMode::IndirectX(_) => {
                 let base = self.read_mem(self.reg.pc);
                 let ptr: u8 = (base as u8).wrapping_add(self.reg.x);
@@ -317,6 +326,8 @@ impl Cpu {
                 let deref_base = (hi as u16) << 8 | (lo as u16);
                 deref_base.wrapping_add(self.reg.y as u16)
             }
+            // Accumulator addressing mode does not need an address
+            AddressMode::Accumulator => 0,
         }
     }
 
@@ -576,7 +587,9 @@ impl Cpu {
         }
     }
 
-    fn jmp(&mut self, address_mode: AddressMode) {}
+    fn jmp(&mut self, address_mode: AddressMode) {
+        self.reg.pc = self.get_address(address_mode);
+    }
 
     fn jsr(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);

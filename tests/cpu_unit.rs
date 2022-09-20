@@ -377,6 +377,16 @@ mod cpu {
     }
 
     #[test]
+    fn _4c() {
+        // jmp absolute
+        let program: [u8; 4] = [0x4c, 0x00, 0x90, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x9000);
+    }
+
+    #[test]
     fn _4d() {
         // eor absolute
         let program: [u8; 5] = [0x4d, 0x03, 0x80, 0xb, 0x00];
@@ -519,6 +529,28 @@ mod cpu {
         cpu.push_stack(0xa);
         cpu.tick();
         assert_eq!(cpu.reg.a, 0xa);
+    }
+
+    #[test]
+    fn _6c() {
+        // jmp indirect
+        let program: [u8; 4] = [0x6c, 0x00, 0x90, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x9000);
+    }
+
+    #[test]
+    fn _6c_page_bound() {
+        // jmp indirect on a page boundary
+        let mut cpu = Cpu::new();
+        cpu.write_mem(0x81fe, 0x6c);
+        cpu.write_mem(0x81ff, 0x00);
+        cpu.write_mem(0x8100, 0x90);
+        cpu.reg.pc = 0x81fe;
+        cpu.tick();
+        assert_eq!(cpu.reg.pc, 0x9000);
     }
 
     #[test]

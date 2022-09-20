@@ -8,6 +8,8 @@ pub enum AddressMode {
     Absolute(u16),
     AbsoluteX(u16),
     AbsoluteY(u16),
+    Accumulator,
+    Indirect(u16),
     IndirectX(u16),
     IndirectY(u16),
 }
@@ -20,6 +22,8 @@ impl AddressMode {
     pub const ABSOLUTE: AddressMode = AddressMode::Absolute(2);
     pub const ABSOLUTE_X: AddressMode = AddressMode::AbsoluteX(2);
     pub const ABSOLUTE_Y: AddressMode = AddressMode::AbsoluteY(2);
+    pub const ACCUMULATOR: AddressMode = AddressMode::Absolute(0);
+    pub const INDIRECT: AddressMode = AddressMode::Indirect(2);
     pub const INDIRECT_X: AddressMode = AddressMode::IndirectX(1);
     pub const INDIRECT_Y: AddressMode = AddressMode::IndirectY(1);
 
@@ -32,8 +36,10 @@ impl AddressMode {
             AddressMode::Absolute(n) => *n,
             AddressMode::AbsoluteX(n) => *n,
             AddressMode::AbsoluteY(n) => *n,
+            AddressMode::Indirect(n) => *n,
             AddressMode::IndirectX(n) => *n,
             AddressMode::IndirectY(n) => *n,
+            AddressMode::Accumulator => 0,
         }
     }
 }
