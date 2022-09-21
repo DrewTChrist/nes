@@ -581,6 +581,18 @@ mod cpu {
     }
 
     #[test]
+    fn _66() {
+        // ror zero page
+        let program: [u8; 3] = [0x66, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0x64, 0xa);
+        cpu.reg.p |= 0x1;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x64), 0x85);
+    }
+
+    #[test]
     fn _68() {
         // pla
         let program: [u8; 2] = [0x68, 0x00];
@@ -589,6 +601,18 @@ mod cpu {
         cpu.push_stack(0xa);
         cpu.tick();
         assert_eq!(cpu.reg.a, 0xa);
+    }
+
+    #[test]
+    fn _6a() {
+        // ror accumulator
+        let program: [u8; 2] = [0x6a, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.a = 0xa;
+        cpu.reg.p |= 0x1;
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0x85);
     }
 
     #[test]
@@ -614,6 +638,17 @@ mod cpu {
     }
 
     #[test]
+    fn _6e() {
+        // ror absolute
+        let program: [u8; 5] = [0x6e, 0x03, 0x80, 0xa, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.p |= 0x1;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x8003), 0x85);
+    }
+
+    #[test]
     fn _70_pos() {
         // bvs with a positive relative offset
         let program: [u8; 3] = [0x70, 0x64, 0x00];
@@ -636,6 +671,19 @@ mod cpu {
     }
 
     #[test]
+    fn _76() {
+        // rol zero page x
+        let program: [u8; 3] = [0x76, 0x60, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0x64, 0xa);
+        cpu.reg.p |= 0x1;
+        cpu.reg.x = 0x4;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x64), 0x85);
+    }
+
+    #[test]
     fn _78() {
         // sei
         let program: [u8; 1] = [0x78];
@@ -645,6 +693,18 @@ mod cpu {
         cpu.tick();
         assert_eq!(cpu.reg.pc, 0x8001);
         assert!(cpu.reg.p & 0b0000_0100 != 0b00);
+    }
+
+    #[test]
+    fn _7e() {
+        // ror absolute x
+        let program: [u8; 5] = [0x7e, 0x00, 0x80, 0xa, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.p |= 0x1;
+        cpu.reg.x = 0x3;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x8003), 0x85);
     }
 
     #[test]

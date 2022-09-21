@@ -636,7 +636,9 @@ impl Cpu {
 
     fn lsr(&mut self, address_mode: AddressMode) {}
 
-    fn nop(&self) {}
+    fn nop(&self) {
+        /* no operation */
+    }
 
     fn ora(&mut self, address_mode: AddressMode) {
         let address = self.get_address(address_mode);
@@ -696,7 +698,34 @@ impl Cpu {
         }
     }
 
-    fn ror(&mut self, address_mode: AddressMode) {}
+    fn ror(&mut self, address_mode: AddressMode) {
+        if let AddressMode::Accumulator = address_mode {
+            let bit_0 = self.reg.a & 0x1;
+            let carry = (self.reg.p & 0x1) << 7;
+            self.reg.a >>= 1;
+            self.reg.a |= carry;
+            self.reg.p |= bit_0;
+            if self.reg.a == 0 {
+                self.reg.enable_flag(Flag::Zero);
+            }
+            if is_negative(self.reg.a) {
+                self.reg.enable_flag(Flag::Negative);
+            }
+        } else {
+            let address = self.get_address(address_mode);
+            self.reg.pc += address_mode.get_pc_increment();
+            let mut value = self.read_mem(address);
+            let bit_0 = value & 0x1;
+            let carry = (self.reg.p & 0x1) << 7;
+            value >>= 1;
+            value |= carry;
+            self.write_mem(address, value);
+            self.reg.p |= bit_0;
+            if is_negative(value) {
+                self.reg.enable_flag(Flag::Negative);
+            }
+        }
+    }
 
     fn rti(&mut self) {}
 
