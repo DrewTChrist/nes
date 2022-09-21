@@ -50,23 +50,25 @@ impl Registers {
 
     pub fn enable_flag(&mut self, flag: Flag) {
         match flag {
-            Flag::Carry => self.update_flag(0, true),
-            Flag::Zero => self.update_flag(1, true),
-            Flag::InterruptDisable => self.update_flag(2, true),
-            Flag::DecimalMode => self.update_flag(3, true),
-            Flag::Overflow => self.update_flag(6, true),
-            Flag::Negative => self.update_flag(7, true),
+            Flag::Carry => self.update_flag(Flag::Carry as u8, true),
+            Flag::Zero => self.update_flag(Flag::Zero as u8, true),
+            Flag::InterruptDisable => self.update_flag(Flag::InterruptDisable as u8, true),
+            Flag::DecimalMode => self.update_flag(Flag::DecimalMode as u8, true),
+            Flag::Break => self.update_flag(Flag::Break as u8, true),
+            Flag::Overflow => self.update_flag(Flag::Overflow as u8, true),
+            Flag::Negative => self.update_flag(Flag::Negative as u8, true),
         }
     }
 
     pub fn disable_flag(&mut self, flag: Flag) {
         match flag {
-            Flag::Carry => self.update_flag(0, false),
-            Flag::Zero => self.update_flag(1, false),
-            Flag::InterruptDisable => self.update_flag(2, false),
-            Flag::DecimalMode => self.update_flag(3, false),
-            Flag::Overflow => self.update_flag(6, false),
-            Flag::Negative => self.update_flag(7, false),
+            Flag::Carry => self.update_flag(Flag::Carry as u8, false),
+            Flag::Zero => self.update_flag(Flag::Zero as u8, false),
+            Flag::InterruptDisable => self.update_flag(Flag::InterruptDisable as u8, false),
+            Flag::DecimalMode => self.update_flag(Flag::DecimalMode as u8, false),
+            Flag::Break => self.update_flag(Flag::Break as u8, false),
+            Flag::Overflow => self.update_flag(Flag::Overflow as u8, false),
+            Flag::Negative => self.update_flag(Flag::Negative as u8, false),
         }
     }
 }
@@ -76,6 +78,7 @@ pub enum Flag {
     Zero = 1,
     InterruptDisable = 2,
     DecimalMode = 3,
+    Break = 5,
     Overflow = 6,
     Negative = 7,
 }

@@ -3,6 +3,19 @@ mod cpu {
     use nes::cpu::Cpu;
 
     #[test]
+    fn _00() {
+        // brk
+        let program: [u8; 2] = [0x00, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0xfffd, 0x03);
+        cpu.write_mem(0xfffe, 0x80);
+        cpu.tick();
+        assert_eq!(cpu.reg.p & 0b0010_0000, 0b0010_0000);
+        assert_eq!(cpu.reg.pc, 0x8003);
+    }
+
+    #[test]
     fn _01() {
         // ora indirect x
         let program: [u8; 4] = [0x01, 0x64, 0x01, 0x00];
@@ -380,6 +393,22 @@ mod cpu {
         cpu.reg.x = 0x3;
         cpu.tick();
         assert_eq!(cpu.read_mem(0x8003), 0x15);
+    }
+
+    #[test]
+    fn _40() {
+        // rti
+        let program: [u8; 2] = [0x00, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0xfffd, 0x03);
+        cpu.write_mem(0xfffe, 0x80);
+        cpu.write_mem(0x8003, 0x40);
+        cpu.reg.p = 0x45;
+        cpu.tick();
+        cpu.tick();
+        assert_eq!(cpu.reg.p, 0x45);
+        assert_eq!(cpu.reg.pc, 0x8001);
     }
 
     #[test]

@@ -421,7 +421,12 @@ impl Cpu {
         self.reg.pc += 1;
     }
 
-    fn brk(&mut self) {}
+    fn brk(&mut self) {
+        self.push_stack_u16(self.reg.pc);
+        self.push_stack(self.reg.p);
+        self.reg.pc = self.read_mem_u16(0xfffd);
+        self.reg.enable_flag(Flag::Break);
+    }
 
     fn bvc(&mut self) {
         if self.reg.p & 0b0100_0000 == 0 {
@@ -727,7 +732,10 @@ impl Cpu {
         }
     }
 
-    fn rti(&mut self) {}
+    fn rti(&mut self) {
+        self.reg.p = self.pop_stack();
+        self.reg.pc = self.pop_stack_u16();
+    }
 
     fn rts(&mut self) {
         self.reg.pc = self.pop_stack_u16() + 1;
