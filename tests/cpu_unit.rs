@@ -187,6 +187,18 @@ mod cpu {
     }
 
     #[test]
+    fn _26() {
+        // rol zero page
+        let program: [u8; 3] = [0x26, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0x64, 0xa);
+        cpu.reg.p |= 0x1;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x64), 0x15);
+    }
+
+    #[test]
     fn _28() {
         // pla
         let program: [u8; 2] = [0x28, 0x00];
@@ -212,6 +224,18 @@ mod cpu {
     }
 
     #[test]
+    fn _2a() {
+        // rol accumulator
+        let program: [u8; 2] = [0x2a, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.a = 0xa;
+        cpu.reg.p |= 0x1;
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0x15);
+    }
+
+    #[test]
     fn _2d() {
         // and absolute
         let program: [u8; 5] = [0x2d, 0x03, 0x80, 0x08, 0x00];
@@ -223,6 +247,17 @@ mod cpu {
         assert_eq!(cpu.reg.a, 0x08);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _2e() {
+        // rol absolute
+        let program: [u8; 5] = [0x2e, 0x03, 0x80, 0xa, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.p |= 0x1;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x8003), 0x15);
     }
 
     #[test]
@@ -281,6 +316,19 @@ mod cpu {
     }
 
     #[test]
+    fn _36() {
+        // rol zero page x
+        let program: [u8; 3] = [0x36, 0x60, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0x64, 0xa);
+        cpu.reg.p |= 0x1;
+        cpu.reg.x = 0x4;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x64), 0x15);
+    }
+
+    #[test]
     fn _38() {
         // sec
         let program: [u8; 1] = [0x38];
@@ -320,6 +368,18 @@ mod cpu {
         assert_eq!(cpu.reg.a, 0x08);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _3e() {
+        // rol absolute x
+        let program: [u8; 5] = [0x3e, 0x00, 0x80, 0xa, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.p |= 0x1;
+        cpu.reg.x = 0x3;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x8003), 0x15);
     }
 
     #[test]

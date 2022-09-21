@@ -667,7 +667,34 @@ impl Cpu {
         self.reg.p = self.pop_stack();
     }
 
-    fn rol(&mut self, address_mode: AddressMode) {}
+    fn rol(&mut self, address_mode: AddressMode) {
+        if let AddressMode::Accumulator = address_mode {
+            let bit_7 = (self.reg.a & 0x80) >> 7;
+            let carry = self.reg.p & 0x1;
+            self.reg.a <<= 1;
+            self.reg.a |= carry;
+            self.reg.p |= bit_7;
+            if self.reg.a == 0 {
+                self.reg.enable_flag(Flag::Zero);
+            }
+            if is_negative(self.reg.a) {
+                self.reg.enable_flag(Flag::Negative);
+            }
+        } else {
+            let address = self.get_address(address_mode);
+            self.reg.pc += address_mode.get_pc_increment();
+            let mut value = self.read_mem(address);
+            let bit_7 = (value & 0x80) >> 7;
+            let carry = self.reg.p & 0x1;
+            value <<= 1;
+            value |= carry;
+            self.write_mem(address, value);
+            self.reg.p |= bit_7;
+            if is_negative(value) {
+                self.reg.enable_flag(Flag::Negative);
+            }
+        }
+    }
 
     fn ror(&mut self, address_mode: AddressMode) {}
 

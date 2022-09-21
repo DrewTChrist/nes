@@ -22,7 +22,7 @@ impl AddressMode {
     pub const ABSOLUTE: AddressMode = AddressMode::Absolute(2);
     pub const ABSOLUTE_X: AddressMode = AddressMode::AbsoluteX(2);
     pub const ABSOLUTE_Y: AddressMode = AddressMode::AbsoluteY(2);
-    pub const ACCUMULATOR: AddressMode = AddressMode::Absolute(0);
+    pub const ACCUMULATOR: AddressMode = AddressMode::Accumulator;
     pub const INDIRECT: AddressMode = AddressMode::Indirect(2);
     pub const INDIRECT_X: AddressMode = AddressMode::IndirectX(1);
     pub const INDIRECT_Y: AddressMode = AddressMode::IndirectY(1);
