@@ -383,7 +383,16 @@ impl Cpu {
         self.reg.pc += 1;
     }
 
-    fn bit(&mut self, address_mode: AddressMode) {}
+    fn bit(&mut self, address_mode: AddressMode) {
+        let address = self.get_address(address_mode);
+        let value = self.read_mem(address);
+        let result = value & self.reg.a;
+        if result == 0 {
+            self.reg.enable_flag(Flag::Zero);
+        }
+        self.reg.p |= result & 0x80;
+        self.reg.p |= result & 0x40;
+    }
 
     fn bmi(&mut self) {
         if self.reg.p & 0b1000_0000 != 0 {

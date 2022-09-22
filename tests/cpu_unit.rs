@@ -185,6 +185,34 @@ mod cpu {
     }
 
     #[test]
+    fn _24() {
+        // bit zero page
+        let program: [u8; 3] = [0x24, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0x64, 0xff);
+        cpu.reg.a = 0xff;
+        cpu.tick();
+        assert_eq!(cpu.reg.p & 0x80, 0x80);
+        assert_eq!(cpu.reg.p & 0x40, 0x40);
+        assert_eq!(cpu.reg.p & 0x2, 0x0);
+    }
+
+    #[test]
+    fn _24_zero() {
+        // bit zero page but result is zero
+        let program: [u8; 3] = [0x24, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0x64, 0x00);
+        cpu.reg.a = 0x42;
+        cpu.tick();
+        assert_eq!(cpu.reg.p & 0x80, 0x0);
+        assert_eq!(cpu.reg.p & 0x40, 0x0);
+        assert_eq!(cpu.reg.p & 0x2, 0x2);
+    }
+
+    #[test]
     fn _25() {
         // and zero page
         let program: [u8; 3] = [0x25, 0x05, 0x00];
@@ -246,6 +274,32 @@ mod cpu {
         cpu.reg.p |= 0x1;
         cpu.tick();
         assert_eq!(cpu.reg.a, 0x15);
+    }
+
+    #[test]
+    fn _2c() {
+        // bit absolute
+        let program: [u8; 5] = [0x2c, 0x03, 0x80, 0xff, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.a = 0xff;
+        cpu.tick();
+        assert_eq!(cpu.reg.p & 0x80, 0x80);
+        assert_eq!(cpu.reg.p & 0x40, 0x40);
+        assert_eq!(cpu.reg.p & 0x2, 0x0);
+    }
+
+    #[test]
+    fn _2c_zero() {
+        // bit absolute but result is zero
+        let program: [u8; 5] = [0x2c, 0x03, 0x80, 0x00, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.a = 0x42;
+        cpu.tick();
+        assert_eq!(cpu.reg.p & 0x80, 0x0);
+        assert_eq!(cpu.reg.p & 0x40, 0x0);
+        assert_eq!(cpu.reg.p & 0x2, 0x2);
     }
 
     #[test]
