@@ -676,7 +676,32 @@ impl Cpu {
         }
     }
 
-    fn lsr(&mut self, address_mode: AddressMode) {}
+    fn lsr(&mut self, address_mode: AddressMode) {
+        if let AddressMode::Accumulator = address_mode {
+            let bit_0 = self.reg.a & 0b1;
+            self.reg.a >>= 1;
+            replace_bit(&mut self.reg.p, 0, bit_0);
+            if self.reg.a == 0 {
+                self.reg.enable_flag(Flag::Zero);
+            }
+            if self.reg.a & 0x80 == 0x80 {
+                self.reg.enable_flag(Flag::Negative);
+            }
+        } else {
+            let address = self.get_address(address_mode);
+            let mut value = self.read_mem(address);
+            let bit_0 = value & 0b1;
+            value >>= 1;
+            self.write_mem(address, value);
+            replace_bit(&mut self.reg.p, 0, bit_0);
+            if value == 0 {
+                self.reg.enable_flag(Flag::Negative);
+            }
+            if value & 0x80 == 0x80 {
+                self.reg.enable_flag(Flag::Negative);
+            }
+        }
+    }
 
     fn nop(&self) {
         /* no operation */

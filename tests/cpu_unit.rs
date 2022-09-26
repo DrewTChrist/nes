@@ -156,7 +156,7 @@ mod cpu {
     #[test]
     fn _16() {
         // asl zero page x
-        let program: [u8; 3] = [0x06, 0x60, 0x00];
+        let program: [u8; 3] = [0x16, 0x60, 0x00];
         let mut cpu = Cpu::new();
         cpu.load_program(program);
         cpu.reg.x = 0x4;
@@ -537,6 +537,17 @@ mod cpu {
     }
 
     #[test]
+    fn _46() {
+        // lsr zero page
+        let program: [u8; 3] = [0x46, 0x64, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.write_mem(0x64, 0xa);
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x64), 0x5);
+    }
+
+    #[test]
     fn _45() {
         // eor zero page
         let program: [u8; 3] = [0x45, 0x05, 0x00];
@@ -575,6 +586,17 @@ mod cpu {
     }
 
     #[test]
+    fn _4a() {
+        // lsr accumulator
+        let program: [u8; 2] = [0x4a, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.a = 0xa;
+        cpu.tick();
+        assert_eq!(cpu.reg.a, 0x5);
+    }
+
+    #[test]
     fn _4c() {
         // jmp absolute
         let program: [u8; 4] = [0x4c, 0x00, 0x90, 0x00];
@@ -595,6 +617,16 @@ mod cpu {
         assert_eq!(cpu.reg.a, 0x1);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _4e() {
+        // lsr absolute
+        let program: [u8; 5] = [0x4e, 0x03, 0x80, 0xa, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x8003), 0x5);
     }
 
     #[test]
@@ -649,6 +681,18 @@ mod cpu {
     }
 
     #[test]
+    fn _56() {
+        // lsr zero page x
+        let program: [u8; 3] = [0x56, 0x60, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x4;
+        cpu.write_mem(0x64, 0xa);
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x64), 0x5);
+    }
+
+    #[test]
     fn _58() {
         // cli
         let program: [u8; 1] = [0x58];
@@ -686,6 +730,17 @@ mod cpu {
         assert_eq!(cpu.reg.a, 0x1);
         assert!(cpu.reg.p & 0b0000_0010 == 0b00);
         assert!(cpu.reg.p & 0b1000_0000 == 0);
+    }
+
+    #[test]
+    fn _5e() {
+        // lsr absolute x
+        let program: [u8; 5] = [0x5e, 0x00, 0x80, 0xa, 0x00];
+        let mut cpu = Cpu::new();
+        cpu.load_program(program);
+        cpu.reg.x = 0x3;
+        cpu.tick();
+        assert_eq!(cpu.read_mem(0x8003), 0x5);
     }
 
     #[test]
