@@ -21,6 +21,12 @@ fn is_negative(value: u8) -> bool {
     value & 0x80 == 0x80
 }
 
+/// Replaces a bit at a location with another specified bit
+fn replace_bit(number: &mut u8, position: u8, value: u8) {
+    let mask: u8 = 0b1 << position;
+    *number = (*number & !mask) | (value << position);
+}
+
 /// Cpu Struct
 pub struct Cpu {
     pub reg: Registers,
@@ -345,7 +351,29 @@ impl Cpu {
         }
     }
 
-    fn asl(&mut self, address_mode: AddressMode) {}
+    fn asl(&mut self, address_mode: AddressMode) {
+        if let AddressMode::Accumulator = address_mode {
+            let bit_7 = (self.reg.a & 0b1000_0000) >> 7;
+            self.reg.a <<= 1;
+            replace_bit(&mut self.reg.p, 0, bit_7);
+            if self.reg.a == 0 {
+                self.reg.enable_flag(Flag::Zero);
+            }
+            if self.reg.a & 0x80 == 0x80 {
+                self.reg.enable_flag(Flag::Negative);
+            }
+        } else {
+            let address = self.get_address(address_mode);
+            let mut value = self.read_mem(address);
+            let bit_7 = (value & 0b1000_0000) >> 7;
+            value <<= 1;
+            self.write_mem(address, value);
+            replace_bit(&mut self.reg.p, 0, bit_7);
+            if value & 0x80 == 0x80 {
+                self.reg.enable_flag(Flag::Negative);
+            }
+        }
+    }
 
     fn bcc(&mut self) {
         if self.reg.p & 0b0000_0001 == 0 {
@@ -689,7 +717,7 @@ impl Cpu {
             let carry = self.reg.p & 0x1;
             self.reg.a <<= 1;
             self.reg.a |= carry;
-            self.reg.p |= bit_7;
+            replace_bit(&mut self.reg.p, 0, bit_7);
             if self.reg.a == 0 {
                 self.reg.enable_flag(Flag::Zero);
             }
@@ -705,7 +733,7 @@ impl Cpu {
             value <<= 1;
             value |= carry;
             self.write_mem(address, value);
-            self.reg.p |= bit_7;
+            replace_bit(&mut self.reg.p, 0, bit_7);
             if is_negative(value) {
                 self.reg.enable_flag(Flag::Negative);
             }
@@ -718,7 +746,7 @@ impl Cpu {
             let carry = (self.reg.p & 0x1) << 7;
             self.reg.a >>= 1;
             self.reg.a |= carry;
-            self.reg.p |= bit_0;
+            replace_bit(&mut self.reg.p, 0, bit_0);
             if self.reg.a == 0 {
                 self.reg.enable_flag(Flag::Zero);
             }
@@ -734,7 +762,7 @@ impl Cpu {
             value >>= 1;
             value |= carry;
             self.write_mem(address, value);
-            self.reg.p |= bit_0;
+            replace_bit(&mut self.reg.p, 0, bit_0);
             if is_negative(value) {
                 self.reg.enable_flag(Flag::Negative);
             }
