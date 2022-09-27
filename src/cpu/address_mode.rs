@@ -12,6 +12,7 @@ pub enum AddressMode {
     Indirect(u16),
     IndirectX(u16),
     IndirectY(u16),
+    NoMode,
 }
 
 impl AddressMode {
@@ -40,6 +41,7 @@ impl AddressMode {
             AddressMode::IndirectX(n) => *n,
             AddressMode::IndirectY(n) => *n,
             AddressMode::Accumulator => 0,
+            AddressMode::NoMode => 0,
         }
     }
 }
