@@ -17,7 +17,18 @@ fn replace_bit(number: &mut u8, position: u8, value: u8) {
     *number = (*number & !mask) | (value << position);
 }
 
-fn adc(cpu: &mut Cpu, address_mode: AddressMode) {}
+fn adc(cpu: &mut Cpu, address_mode: AddressMode) {
+    let address = cpu.get_address(address_mode);
+    let value = cpu.read_mem(address) + cpu.reg.p & 0x1;
+    let result = cpu.reg.a.overflowing_add(value);
+    cpu.reg.a = result.0;
+    if cpu.reg.a == 0 {
+        cpu.reg.enable_flag(Flag::Zero);
+    }
+    if result.1 {
+        cpu.reg.enable_flag(Flag::Carry);
+    }
+}
 
 fn and(cpu: &mut Cpu, address_mode: AddressMode) {
     let address = cpu.get_address(address_mode);

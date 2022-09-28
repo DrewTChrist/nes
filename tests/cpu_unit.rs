@@ -774,6 +774,16 @@ mod cpu {
     }
 
     #[test]
+    fn _61() {
+        // adc indirect x
+    }
+
+    #[test]
+    fn _65() {
+        // adc zero page
+    }
+
+    #[test]
     fn _66() {
         // ror zero page
         let program: [u8; 3] = [0x66, 0x64, 0x00];
@@ -794,6 +804,11 @@ mod cpu {
         cpu.push_stack(0xa);
         cpu.tick();
         assert_eq!(cpu.reg.a, 0xa);
+    }
+
+    #[test]
+    fn _69() {
+        // adc immediate
     }
 
     #[test]
@@ -831,6 +846,11 @@ mod cpu {
     }
 
     #[test]
+    fn _6d() {
+        // adc absolute
+    }
+
+    #[test]
     fn _6e() {
         // ror absolute
         let program: [u8; 5] = [0x6e, 0x03, 0x80, 0xa, 0x00];
@@ -864,6 +884,16 @@ mod cpu {
     }
 
     #[test]
+    fn _71() {
+        // adc indirect y
+    }
+
+    #[test]
+    fn _75() {
+        // adc zero page x
+    }
+
+    #[test]
     fn _76() {
         // rol zero page x
         let program: [u8; 3] = [0x76, 0x60, 0x00];
@@ -886,6 +916,16 @@ mod cpu {
         cpu.tick();
         assert_eq!(cpu.reg.pc, 0x8001);
         assert!(cpu.reg.p & 0b0000_0100 != 0b00);
+    }
+
+    #[test]
+    fn _79() {
+        // adc absolute y
+    }
+
+    #[test]
+    fn _7d() {
+        // adc absolute x
     }
 
     #[test]
