@@ -1,5 +1,9 @@
 #[cfg(test)]
 mod cpu {
+}
+
+#[cfg(test)]
+mod instructions {
     use nes::cpu::Cpu;
 
     #[test]
