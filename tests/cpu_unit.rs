@@ -12,6 +12,16 @@ mod cpu {
         assert_eq!(slice.len(), 3);
         assert_eq!(slice[2], 0x3);
     }
+
+    #[test]
+    fn get_registers() {
+        let mut cpu = Cpu::new();
+        cpu.reg.x = 0xa;
+        cpu.reg.y = 0xb;
+        let reg = cpu.get_registers();
+        assert_eq!(reg.x, 0xa);
+        assert_eq!(reg.y, 0xb);
+    }
 }
 
 #[cfg(test)]
