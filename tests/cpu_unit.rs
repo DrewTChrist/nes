@@ -1,5 +1,17 @@
 #[cfg(test)]
 mod cpu {
+    use nes::cpu::Cpu;
+
+    #[test]
+    fn get_mem_slice() {
+        let mut cpu = Cpu::new();
+        cpu.write_mem(0x8000, 0x1);
+        cpu.write_mem(0x8001, 0x2);
+        cpu.write_mem(0x8002, 0x3);
+        let slice = cpu.get_mem_slice(0x8000, 0x8003);
+        assert_eq!(slice.len(), 3);
+        assert_eq!(slice[2], 0x3);
+    }
 }
 
 #[cfg(test)]
