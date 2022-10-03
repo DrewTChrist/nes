@@ -22,6 +22,13 @@ mod cpu {
         assert_eq!(reg.x, 0xa);
         assert_eq!(reg.y, 0xb);
     }
+
+    #[test]
+    fn load_program() {
+        let mut cpu = Cpu::new();
+        cpu.load_program([0x1]);
+        assert_eq!(cpu.read_mem(0x8000), 0x1);
+    }
 }
 
 #[cfg(test)]
